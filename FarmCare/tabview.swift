@@ -24,6 +24,7 @@ struct tabview: View {
                 .tabItem {
                     Label("Animal", systemImage: "pawprint.fill")
                 }
+               
         }
     }
 }

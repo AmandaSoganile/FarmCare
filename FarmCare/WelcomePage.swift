@@ -24,6 +24,7 @@ struct WelcomePage: View {
                 Text("Modern Tools For Traditional Farmers")
                     .font(.title3)
                     .fontWeight(.heavy)
+                    .fontDesign(.rounded)
                     .padding()
                 
                 Spacer()
