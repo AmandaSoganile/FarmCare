@@ -13,6 +13,13 @@ struct add_New_Animal: View {
     
     @State private var selectedWeight = 1
     let weightOptions = Array(40...1000)
+    
+    @State private var selectedFeed = 1
+    let feedOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
+    
+    @State private var selectedVaccination = 1
+    let vaccinationOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
+    
     @State private var name = ""
     @State private var breed = ""
     @State private var feedType = ""
@@ -85,6 +92,7 @@ struct add_New_Animal: View {
                                 Text("\(value) kg").tag(value)
                             }
                         }
+                        .frame(height: 85)
                         .padding()
                         .pickerStyle(.inline)
                         
@@ -104,16 +112,52 @@ struct add_New_Animal: View {
                     }
                     .padding()
                     
-                    //                    HStack(spacing: 60){
-                    //                        Text("Species")
-                    //                            .font(.title3)
-                    //                            .fontWeight(.bold)
-                    //
+                    HStack(spacing: 60){
+                        Text("Feed Schedule")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .padding(18)
+                        Picker("Choose weight", selection: $selectedFeed) {
+                            ForEach(feedOptions, id: \.self) { value in
+                                Text("\(value) hr(s)").tag(value)
+                            }
+                        }
+                        .frame(height: 85)
+                        .padding()
+                        .pickerStyle(.inline)
+                        
+                        
+                    }
                     
-                    DatePicker("Feed schedule", selection: $feedingSchedule, displayedComponents: .hourAndMinute)
-                        .font(.title3)
-                        .fontWeight(.bold)
+                    VStack(alignment: .leading){
+                        Text("Vaccination Type")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                        TextField("Enter name of vaccination eg. Rabies", text: $vaccinationType)
+                            .padding(10)
+                            .overlay(RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.black, lineWidth: 2)
+                                .frame(width: 366, height: 50)
+                                .shadow(radius: 20))
+                    }
                     .padding()
+                    
+                    HStack(spacing: 60){
+                        Text("Vaccination schedule")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .padding(18)
+                        Picker("Choose weight", selection: $selectedVaccination) {
+                            ForEach(vaccinationOptions, id: \.self) { value in
+                                Text("\(value) week(s)").tag(value)
+                            }
+                        }
+                        .frame(height: 85)
+                        .padding()
+                        .pickerStyle(.inline)
+                        
+                    }
+                
                 }
             }
         }
