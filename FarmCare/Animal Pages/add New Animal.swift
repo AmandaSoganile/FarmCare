@@ -9,7 +9,7 @@ import SwiftUI
 
 struct add_New_Animal: View {
     @State private var selectedOption = "Cow"
-    let options = ["Cow", "Chicken"]
+    let options = ["Cow", "Chicken", "Pig"]
     
     @State private var selectedWeight = 1
     let weightOptions = Array(40...1000)
@@ -25,8 +25,8 @@ struct add_New_Animal: View {
     @State private var feedType = ""
     @State private var vaccinationType = ""
     
-    @State private var feedingSchedule: Date = .now
-    @State private var vaccinationSchedule: Date = .now
+    @State private var feedingSchedule: Int = 1
+    @State private var vaccinationSchedule: Int = 1
     
     var body: some View {
         NavigationStack{
@@ -97,7 +97,7 @@ struct add_New_Animal: View {
                             .pickerStyle(.inline)
                             
                         }
-                        //                Spacer(minLength: 220)
+                       
                         
                         VStack(alignment: .leading){
                             Text("Feed Type")
@@ -158,8 +158,11 @@ struct add_New_Animal: View {
                             
                         }
                         
-                        NavigationLink { tabview()
+                        Button {
                             
+                            let animalToSave = Animal(id: UUID(), name: name, species: Species.cow, breed: breed, feedType: feedType, feedSchedule: feedingSchedule, vaccinationType: vaccinationType, vaccinationFrequency: vaccinationSchedule)
+                            newAnimals.append(animalToSave)
+                        
                         } label: {
                             
                             ZStack {

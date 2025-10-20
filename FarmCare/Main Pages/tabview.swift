@@ -20,7 +20,7 @@ struct tabview: View {
                     Label("Add", systemImage: "plus.app.fill")
                 }
             
-            animal_species_tab()
+            animalCategories()
                 .tabItem {
                     Label("Animal", systemImage: "pawprint.fill")
                 }
