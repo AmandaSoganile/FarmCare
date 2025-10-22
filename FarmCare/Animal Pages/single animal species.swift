@@ -13,7 +13,7 @@ struct single_animal_species: View {
     
     var body: some View {
         VStack{
-            NavigationSplitView {
+            NavigationStack {
                 List(sampleAnimals.filter { $0.species == category.species }) { animal in
                     NavigationLink{
                         animal_profile(animal: animal)
@@ -22,14 +22,8 @@ struct single_animal_species: View {
                     }
                 }
                 .navigationTitle(category.name)
-            }detail: {
-                Text("Select an animal to view more information")
             }
         }
-            
-            
-            
-            
             
         }
         

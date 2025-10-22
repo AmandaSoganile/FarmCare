@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct add_New_Animal: View {
-    @State private var selectedOption = "Cow"
-    let options = ["Cow", "Chicken", "Pig"]
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedOption = Species.cow
+    let options = [Species.cow, Species.pig, Species.chicken]
     
     @State private var selectedWeight = 1
     let weightOptions = Array(40...1000)
@@ -28,6 +29,8 @@ struct add_New_Animal: View {
     @State private var feedingSchedule: Int = 1
     @State private var vaccinationSchedule: Int = 1
     
+
+    
     var body: some View {
         NavigationStack{
             VStack{
@@ -38,6 +41,7 @@ struct add_New_Animal: View {
                     
                 }
                 .padding()
+                
                 ScrollView{
                     HStack(spacing: 60){
                         Text("Species")
@@ -46,7 +50,7 @@ struct add_New_Animal: View {
                         
                         Picker("Choose a species", selection: $selectedOption){
                             ForEach(options, id: \.self){ option in
-                                Text(option).tag(option)
+                                Text(option.rawValue).tag(option)
                             }
                         }
                         
@@ -160,8 +164,10 @@ struct add_New_Animal: View {
                         
                         Button {
                             
-                            let animalToSave = Animal(id: UUID(), name: name, species: Species.cow, breed: breed, feedType: feedType, feedSchedule: feedingSchedule, vaccinationType: vaccinationType, vaccinationFrequency: vaccinationSchedule)
-                            newAnimals.append(animalToSave)
+                            let animalToSave = Animal(id: UUID(), name: name, species: selectedOption, breed: breed, weight: selectedWeight, feedType: feedType, feedSchedule: selectedFeed, vaccinationType: vaccinationType, vaccinationFrequency: selectedVaccination, notes: "")
+                            sampleAnimals.append(animalToSave)
+                            
+                            dismiss()
                         
                         } label: {
                             
@@ -183,7 +189,8 @@ struct add_New_Animal: View {
                     }
                 }
             }
-        }
+            .navigationBarBackButtonHidden(true)}
+        
     }
 }
 

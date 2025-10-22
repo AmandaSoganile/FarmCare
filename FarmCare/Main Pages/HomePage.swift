@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct HomePage: View {
+    
     var body: some View {
-                VStack {
-                    Image(systemName: "globe")
-                        .imageScale(.large)
-                        .foregroundStyle(.tint)
-                    Text("Hello, world!")
-                }
-                .padding()
+        NavigationStack{
+            VStack(spacing: 16) {
+                Text("Hello")
             }
+            .navigationBarBackButtonHidden(true)
+        }
+        
+    }
 }
 
 #Preview {

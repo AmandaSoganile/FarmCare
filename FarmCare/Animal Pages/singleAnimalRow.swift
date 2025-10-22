@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: 12)
+let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", weight: 456, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: 12, notes: "OLD")
 
 struct singleAnimalRow: View {
     let animal: Animal
@@ -17,7 +17,7 @@ struct singleAnimalRow: View {
             Image(animal.species.imageResource)
                 .resizable()
                 .scaledToFit()
-                .frame(width:100, height:100)
+                .frame(width:80, height:80)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             
             VStack(alignment: .leading) {
