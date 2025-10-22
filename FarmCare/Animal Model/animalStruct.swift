@@ -10,7 +10,7 @@ import SwiftUI
 
 
 
-enum Species: String {
+enum Species: String, CaseIterable {
     case cow = "Cow"
     case chicken = "Chicken"
     case pig = "Pig"
