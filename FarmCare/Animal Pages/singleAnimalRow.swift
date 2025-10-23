@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", weight: 456, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: 12, notes: "OLD")
+let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", weight: 456, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: .oneWeek, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "OLD")
 
 struct singleAnimalRow: View {
     let animal: Animal

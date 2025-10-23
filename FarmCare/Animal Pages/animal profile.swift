@@ -9,7 +9,7 @@ import SwiftUI
 
 struct animal_profile: View {
     
-    let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", weight: 345, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: 12, notes: "")
+    let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", weight: 345, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: .sixWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "")
     
     var animal: Animal
     
@@ -63,7 +63,7 @@ struct animal_profile: View {
                         
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Vaccination: \(animal.vaccinationType)", systemImage: "bandage.fill")
-                            Label("Every \(animal.vaccinationFrequency) weeks", systemImage: "calendar")
+                            Label("Every \(animal.vaccinationFrequency.description)", systemImage: "calendar")
                         }
                     }
                 }
@@ -83,9 +83,9 @@ struct animal_profile: View {
                         Text("Feed Type: \(animal.feedType)")
                         Text("Feed Schedule: \(animal.feedSchedule) hours")
                         Text("Vaccination Type: \(animal.vaccinationType)")
-                        Text("Vaccination Frequency: \(animal.vaccinationFrequency) days")
-                        
-                        
+                        Text("Vaccination Frequency: \(animal.vaccinationFrequency.description)")
+                        Text("Last vaccination:  \(animal.lastVaccinationDate, style: .date)")
+                        Text("Next vaccination: \(animal.nextVaccinationDate, style: .date)")
                     }
                     
                     .padding(.top, 8)
@@ -140,9 +140,9 @@ struct animal_profile: View {
     
     func determineHealthStatus() -> HealthStatus {
         
-        if animal.vaccinationFrequency <= 2 {
+        if animal.vaccinationFrequency.rawValue <= 2 {
             return .healthy
-        } else if animal.vaccinationFrequency < 3 {
+        } else if animal.vaccinationFrequency.rawValue < 3 {
             return .monitor
         } else {
             return .needsAttention

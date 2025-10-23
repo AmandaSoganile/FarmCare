@@ -12,22 +12,50 @@ struct single_animal_species: View {
     let category: animalCategory
     
     var body: some View {
-        VStack{
-            NavigationStack {
-                List(sampleAnimals.filter { $0.species == category.species }) { animal in
-                    NavigationLink{
-                        animal_profile(animal: animal)
-                    } label: {
-                        singleAnimalRow(animal: animal)
+        NavigationStack{
+            ZStack{
+                VStack{
+                    NavigationStack {
+                        List(sampleAnimals.filter { $0.species == category.species }) { animal in
+                            NavigationLink{
+                                animal_profile(animal: animal)
+                            } label: {
+                                singleAnimalRow(animal: animal)
+                            }
+                        }
+                        .navigationTitle(category.name)
                     }
                 }
-                .navigationTitle(category.name)
+                
+                VStack{
+                    
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        
+                        NavigationLink{
+                            add_New_Animal()
+                        } label: {
+                            
+                            ZStack {
+                                Circle()
+                                    .frame(width: 60)
+                                    .foregroundStyle(Color.black)
+                                
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .foregroundStyle(Color.white)
+                                    .frame(width: 25, height: 25)
+                            }
+                        }
+                    }
+                    .padding()
+                }
             }
         }
-            
-        }
-        
     }
+}
 
 
 

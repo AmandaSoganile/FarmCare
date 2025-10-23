@@ -19,7 +19,9 @@ struct add_New_Animal: View {
     let feedOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
     
     @State private var selectedVaccination = 1
-    let vaccinationOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
+    @State private var selectedVaccinationFrequency: VaccinationInterval = .sixWeeks
+    @State private var selectedVaccinationDate: Date = Date()
+//    let vaccinationOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
     
     @State private var name = ""
     @State private var breed = ""
@@ -146,25 +148,51 @@ struct add_New_Animal: View {
                         }
                         .padding()
                         
-                        HStack(spacing: 60){
-                            Text("Vaccination schedule")
+                        HStack(spacing: 60) {
+                            Text("Last Vaccination Date")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                            
+                            DatePicker("Select date", selection: $selectedVaccinationDate, displayedComponents: .date)
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .padding(.leading, 10)
+                        }
+                        .padding()
+                        
+                        HStack(spacing: 60) {
+                            Text("Vaccination Frequency")
                                 .font(.title3)
                                 .fontWeight(.bold)
                                 .padding(18)
-                            Picker("Choose weight", selection: $selectedVaccination) {
-                                ForEach(vaccinationOptions, id: \.self) { value in
-                                    Text("\(value) week(s)").tag(value)
+                            
+                            Picker("Select frequency", selection: $selectedVaccinationFrequency) {
+                                ForEach(VaccinationInterval.allCases, id: \.self) { interval in
+                                    Text(interval.description).tag(interval)
                                 }
                             }
                             .frame(height: 85)
                             .padding()
                             .pickerStyle(.inline)
-                            
                         }
+                        
                         
                         Button {
                             
-                            let animalToSave = Animal(id: UUID(), name: name, species: selectedOption, breed: breed, weight: selectedWeight, feedType: feedType, feedSchedule: selectedFeed, vaccinationType: vaccinationType, vaccinationFrequency: selectedVaccination, notes: "")
+                            let animalToSave = Animal(
+                                id: UUID(),
+                                name: name,
+                                species: selectedOption,
+                                breed: breed,
+                                weight: selectedWeight,
+                                feedType: feedType,
+                                feedSchedule: selectedFeed,
+                                vaccinationType: vaccinationType,
+                                vaccinationFrequency: selectedVaccinationFrequency,
+                                lastVaccinationDate: selectedVaccinationDate,
+                                notes: ""
+                            )
+
                             sampleAnimals.append(animalToSave)
                             
                             dismiss()
