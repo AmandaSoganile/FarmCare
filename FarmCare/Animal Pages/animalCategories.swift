@@ -23,36 +23,65 @@ struct animalCategories: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 17) {
-                    Text("Animal Species")
-                        .font(.largeTitle)
-                        .fontWeight(.heavy)
-                    
-                    ForEach(categories) { category in
-                        NavigationLink(destination: single_animal_species(category: category)) {
-                            Text(category.name)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundStyle(Color.black)
-                            
+            ZStack{
+                ScrollView {
+                    VStack(spacing: 17) {
+                        Text("Animal Species")
+                            .font(.largeTitle)
+                            .fontWeight(.heavy)
                         
-                            
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(Color.gray.opacity(0.3))
+                        ForEach(categories) { category in
+                            NavigationLink(destination: single_animal_species(category: category)) {
+                                Text(category.name)
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(Color.black)
+                                
+                                
+                                
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(height: 200)
+                                    )
                                     .frame(height: 200)
-                            )
-                            .frame(height: 200)
-                            .padding(.horizontal)
+                                    .padding(.horizontal)
+                            }
                         }
                     }
+                    .padding(.top)
                 }
-                .padding(.top)
+                
+                VStack{
+                    
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        
+                        NavigationLink{
+                            add_New_Animal()
+                        } label: {
+                            
+                            ZStack {
+                                Circle()
+                                    .frame(width: 60)
+                                    .foregroundStyle(Color.black)
+                                    .shadow(radius: 12)
+                                
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .foregroundStyle(Color.white)
+                                    .frame(width: 25, height: 25)
+                            }
+                        }
+                    }
+                    .padding()
+                }
+                
             }
-            
         }
     }
 }

@@ -38,7 +38,8 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                NavigationLink { tabview()
+                NavigationLink { 
+                    tabview()
                     
                 } label: {
                     
