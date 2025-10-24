@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
-struct animal_profile: View {
+struct animalProfile: View {
+    @Environment(\.modelContext) private var context
+    @Bindable var animal: Animal
+    @State private var isEditing: Bool = false
     
-    let sampleAnimal = Animal(id: UUID(), name: "Bessie", species: .cow, breed: "Holstein", weight: 345, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: .sixWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "")
-    
-    var animal: Animal
     
     @State private var showDetails = false
     @State private var notes: String = ""
@@ -21,7 +22,7 @@ struct animal_profile: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 
-                
+                //animal name and health status
                 HStack(alignment: .center) {
                     Image(animal.species.imageResource)
                         .resizable()
@@ -52,7 +53,7 @@ struct animal_profile: View {
                         .font(.title3)
                         .fontWeight(.semibold)
                     
-                    
+                    // health summary
                     HStack {
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Feed: \(animal.feedType)", systemImage: "leaf.fill")
@@ -75,6 +76,8 @@ struct animal_profile: View {
                 
                 DisclosureGroup(isExpanded: $showDetails) {
                     
+                    
+                    // full details
                     VStack(alignment: .leading, spacing: 10) {
                         
                         Text("Name: \(animal.name)")
@@ -106,14 +109,47 @@ struct animal_profile: View {
                     Text("Notes")
                         .font(.headline)
                     
-                    TextEditor(text: $notes)
-                        .frame(height: 120)
-                        .padding(8)
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
-                    
-                    Button(action: saveNotes) {
-                        Label("Save Notes", systemImage: "square.and.arrow.down.fill")
+                    if isEditing {
+                        TextEditor(text: $notes)
+                            .frame(height: 120)
+                            .padding(8)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(12)
+                            .onChange(of: notes) { _ in
+                               
+                                animal.notes = notes
+                                do {
+                                    try context.save()
+                                } catch {
+                                    // Handle save error appropriately in production
+                                    print("Failed to save notes")
+                                }
+                            }
+                    } else {
+                        if animal.notes.isEmpty {
+                            Text("No Notes Yet")
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text(animal.notes)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    Button(action: {
+                        if isEditing {
+                            
+                            animal.notes = notes
+                            do {
+                                try context.save()
+                            } catch {
+                                print("Failed to save notes: \(error)")
+                            }
+                        } else {
+                            
+                            notes = animal.notes
+                        }
+                        isEditing.toggle()
+                    }) {
+                        Label(isEditing ? "Done" : "Edit Notes", systemImage: isEditing ? "checkmark.circle.fill" : "square.and.pencil")
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.black)
@@ -175,5 +211,18 @@ extension Species {
 
 
 #Preview {
-    animal_profile(animal: sampleAnimal)
+    let previewAnimal = Animal(
+        id: UUID(),
+        name: "Bessie",
+        species: .cow,
+        breed: "Holstein",
+        weight: 345,
+        feedType: "Hay",
+        feedSchedule: 6,
+        vaccinationType: "Rabies",
+        vaccinationFrequency: .sixWeeks,
+        lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
+        notes: "Lively and eating well."
+    )
+    return animalProfile(animal: previewAnimal)
 }

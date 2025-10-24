@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+import SwiftData
+
+
 
 struct SummaryCard {
     var name: String
@@ -13,22 +16,23 @@ struct SummaryCard {
 }
 
 struct HomePage: View {
+    @Query var animals: [Animal]
     
     var animalTotals: [SummaryCard] {
         Species.allCases.map { species in
             SummaryCard(
                 name: species.rawValue.capitalized + "s",
-                total: sampleAnimals.filter { $0.species == species }.count
+                total: animals.filter { $0.species == species }.count
             )
         }
     }
     
     var upcomingVaccinations: [Animal] {
-        sampleAnimals.filter { $0.isVaccinationDueSoon }
+        animals.filter { $0.isVaccinationDueSoon }
     }
     
     var missedVaccinations: [Animal] {
-        sampleAnimals.filter { $0.isVaccinationMissed }
+        animals.filter { $0.isVaccinationMissed }
     }
     
     var body: some View {
@@ -51,17 +55,17 @@ struct HomePage: View {
                                         Text("Total animals")
                                             .font(.system(size: 20, weight: .bold, design: .default))
                                         
-                                        Text("\(sampleAnimals.count)")
+                                        Text("\(animals.count)")
                                             .font(.title3)
                                             .fontWeight(.bold)
                                     }
                                     .padding(.horizontal,   60)
-                                     Spacer()
+//                                     Spacer()
                                     
-                                    Image(systemName: "arrowshape.forward.fill")
-                                        .resizable()
-                                        .frame(width:35, height: 30)
-                                        .padding(.horizontal, 25)
+//                                    Image(systemName: "arrowshape.forward.fill")
+//                                        .resizable()
+//                                        .frame(width:35, height: 30)
+//                                        .padding(.horizontal, 25)
                                 }
                             }
                             .buttonStyle(.plain)
@@ -72,7 +76,7 @@ struct HomePage: View {
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 18)
                                                 .frame(width: 140, height: 80)
-                                                .foregroundStyle(Color.gray.opacity(0.18))
+                                                .foregroundStyle(.ultraThinMaterial)
                                             
                                             VStack {
                                                 Text(card.name)

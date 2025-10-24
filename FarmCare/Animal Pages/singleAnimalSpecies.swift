@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
-struct single_animal_species: View {
+struct singleAnimalSpecies: View {
+@Query var animals: [Animal]
     
     let category: animalCategory
     
@@ -16,14 +18,15 @@ struct single_animal_species: View {
             ZStack{
                 VStack{
                     NavigationStack {
-                        List(sampleAnimals.filter { $0.species == category.species }) { animal in
+                        List(animals.filter { $0.species == category.species }) { animal in
                             NavigationLink{
-                                animal_profile(animal: animal)
+                                animalProfile(animal: animal)
                             } label: {
-                                singleAnimalRow(animal: animal)
+                                singleAnimalRow(animal: animal) 
                             }
                         }
                         .navigationTitle(category.name)
+                        
                     }
                 }
                 
@@ -60,5 +63,5 @@ struct single_animal_species: View {
 
 
 #Preview {
-    single_animal_species(category: animalCategory(name: "Cattle", icon: Image("cow"), species: .cow))
+    singleAnimalSpecies(category: animalCategory(name: "Cattle", icon: Image("cow"), species: .cow))
 }
