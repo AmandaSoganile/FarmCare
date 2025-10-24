@@ -7,10 +7,10 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 
-
-enum Species: String, CaseIterable {
+enum Species: String, CaseIterable, Codable {
     case cow = "Cow"
     case chicken = "Chicken"
     case pig = "Pig"
@@ -27,9 +27,8 @@ enum Species: String, CaseIterable {
     }
 }
 
-
-struct Animal: Identifiable, Hashable {
-    let id: UUID
+@Model
+class Animal {
     var name: String
     var species: Species
     var breed: String
@@ -41,6 +40,19 @@ struct Animal: Identifiable, Hashable {
     var lastVaccinationDate: Date
     var notes: String
 
+    init(id: UUID, name: String, species: Species, breed: String, weight: Int, feedType: String, feedSchedule: Int, vaccinationType: String, vaccinationFrequency: VaccinationInterval, lastVaccinationDate: Date, notes: String) {
+        self.name = name
+        self.species = species
+        self.breed = breed
+        self.weight = weight
+        self.feedType = feedType
+        self.feedSchedule = feedSchedule
+        self.vaccinationType = vaccinationType
+        self.vaccinationFrequency = vaccinationFrequency
+        self.lastVaccinationDate = lastVaccinationDate
+        self.notes = notes
+    }
+    
     var nextVaccinationDate: Date {
         vaccinationFrequency.nextVaccinationDate(from: lastVaccinationDate)
     }
@@ -60,7 +72,7 @@ struct Animal: Identifiable, Hashable {
 }
 
 
-enum VaccinationInterval: Int, CaseIterable, Identifiable {
+enum VaccinationInterval: Int, CaseIterable, Identifiable, Codable {
     case oneWeek = 1
     case twoWeeks = 2
     case threeWeeks = 3

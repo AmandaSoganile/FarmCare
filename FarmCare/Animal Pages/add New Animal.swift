@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct add_New_Animal: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
+    
     @State private var selectedOption = Species.cow
     let options = [Species.cow, Species.pig, Species.chicken]
     
@@ -21,7 +24,7 @@ struct add_New_Animal: View {
     @State private var selectedVaccination = 1
     @State private var selectedVaccinationFrequency: VaccinationInterval = .sixWeeks
     @State private var selectedVaccinationDate: Date = Date()
-//    let vaccinationOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
+
     
     @State private var name = ""
     @State private var breed = ""
@@ -44,6 +47,7 @@ struct add_New_Animal: View {
                 }
                 .padding()
                 
+                //Choose a species
                 ScrollView{
                     HStack(spacing: 60){
                         Text("Species")
@@ -61,6 +65,7 @@ struct add_New_Animal: View {
                     }
                     .padding()
                     
+                    // Animal name text field
                     VStack(alignment: .leading){
                         Text("Name")
                             .font(.title3)
@@ -74,6 +79,7 @@ struct add_New_Animal: View {
                     }
                     .padding()
                     
+                    //Breed textfield
                     VStack(alignment: .leading){
                         Text("Breed")
                             .font(.title3)
@@ -87,6 +93,7 @@ struct add_New_Animal: View {
                     }
                     .padding()
                     
+                    //Weight picker
                     VStack{
                         HStack(spacing: 60){
                             Text("Weight")
@@ -105,6 +112,7 @@ struct add_New_Animal: View {
                         }
                        
                         
+                        //feed type text field
                         VStack(alignment: .leading){
                             Text("Feed Type")
                                 .font(.title3)
@@ -118,6 +126,7 @@ struct add_New_Animal: View {
                         }
                         .padding()
                         
+                        //feed schedule picker
                         HStack(spacing: 60){
                             Text("Feed Schedule")
                                 .font(.title3)
@@ -135,6 +144,8 @@ struct add_New_Animal: View {
                             
                         }
                         
+                        
+                        //vaccination type text field
                         VStack(alignment: .leading){
                             Text("Vaccination Type")
                                 .font(.title3)
@@ -148,6 +159,8 @@ struct add_New_Animal: View {
                         }
                         .padding()
                         
+                        
+                        //last vaccination date picker
                         HStack(spacing: 60) {
                             Text("Last Vaccination Date")
                                 .font(.title3)
@@ -160,6 +173,8 @@ struct add_New_Animal: View {
                         }
                         .padding()
                         
+                        
+                        //vaccination frequency picker
                         HStack(spacing: 60) {
                             Text("Vaccination Frequency")
                                 .font(.title3)
@@ -176,7 +191,7 @@ struct add_New_Animal: View {
                             .pickerStyle(.inline)
                         }
                         
-                        
+                        //button to save to a new array
                         Button {
                             
                             let animalToSave = Animal(
@@ -193,10 +208,17 @@ struct add_New_Animal: View {
                                 notes: ""
                             )
 
-                            sampleAnimals.append(animalToSave)
+                            context.insert(animalToSave)
                             
                             dismiss()
                         
+                            do{
+                                try context.save()
+                                print("Animal saved")
+                            }catch{
+                                print("Failed to save")
+                            }
+                            
                         } label: {
                             
                             ZStack {

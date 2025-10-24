@@ -31,7 +31,7 @@ struct animalCategories: View {
                             .fontWeight(.heavy)
                         
                         ForEach(categories) { category in
-                            NavigationLink(destination: single_animal_species(category: category)) {
+                            NavigationLink(destination: singleAnimalSpecies(category: category)) {
                                 Text(category.name)
                                     .font(.title)
                                     .fontWeight(.bold)

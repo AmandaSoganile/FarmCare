@@ -32,7 +32,7 @@ struct ContentView: View {
                     .font(.title3)
                     .fontWeight(.heavy)
                     .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-//                    .fontDesign(.rounded)
+
                     .padding()
                 
                 

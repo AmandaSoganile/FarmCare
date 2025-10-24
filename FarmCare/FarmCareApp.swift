@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct FarmCareApp: App {
@@ -13,5 +14,6 @@ struct FarmCareApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: Animal.self)
     }
 }
