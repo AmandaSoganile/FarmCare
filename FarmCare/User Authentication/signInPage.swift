@@ -13,12 +13,11 @@ struct signInPage: View {
     
     var body: some View {
         NavigationStack{
-            VStack{
                 Text("Sign in")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding()
-            }
+
             
             
             //name textfield

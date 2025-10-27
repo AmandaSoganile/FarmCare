@@ -163,6 +163,7 @@ struct HomePage: View {
                         .padding(.bottom)
                     }
                 }
+            .navigationBarBackButtonHidden(true)
             }
         }
     }
