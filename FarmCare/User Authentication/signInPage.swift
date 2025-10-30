@@ -10,6 +10,9 @@ import SwiftUI
 struct signInPage: View {
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var showPassword: Bool = false
+    @State private var navigateToHome : Bool = false
+    @StateObject private var viewModel = AuthViewModel()
     
     var body: some View {
         NavigationStack{
@@ -23,16 +26,10 @@ struct signInPage: View {
             //name textfield
             VStack{
                 VStack(alignment: .leading){
-                    Text("Email address")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    
-                    TextField("Email Address ", text: $email)
-                        .padding(10)
-                        .overlay(RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.black, lineWidth: 2)
-                            .frame(width: 366, height: 50)
-                            .shadow(radius: 20))
+                    CustomTextField(title: "Email Address", text: $viewModel.email, placeholder: "Email")
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                 }
                 .padding()
                 
@@ -41,19 +38,35 @@ struct signInPage: View {
                         .font(.title3)
                         .fontWeight(.bold)
                     
-                    SecureField("Password", text: $password)
-                        .padding(10)
-                        .overlay(RoundedRectangle(cornerRadius: 40)
+                    HStack {
+                        if showPassword {
+                            TextField("Password", text: $viewModel.password)
+                        } else {
+                            SecureField("Password", text: $viewModel.password)
+                        }
+                        Button(action: { showPassword.toggle() }) {
+                            Image(systemName: showPassword ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 40)
                             .stroke(Color.black, lineWidth: 2)
-                            .frame(width: 366, height: 50)
-                            .shadow(radius: 20))
+                    )
+                    .frame(width: 366, height: 50)
                 }
-                .padding()
                 
                
                 
-                NavigationLink{
-                    HomePage()
+                Button {
+                    Task { try await viewModel.signInWithEmail(email: viewModel.email, password: viewModel.password)
+                        if viewModel.isAuthenticated {
+                            navigateToHome = true
+                        }else {
+                            viewModel.errorMessage = "Please fix the errors before signing up."
+                        }
+                    }
                 } label: {
                     
                     ZStack {
@@ -86,6 +99,9 @@ struct signInPage: View {
                     }
                 }
                 .padding(.trailing, 25)
+                NavigationLink(destination: HomePage(), isActive: $navigateToHome) {
+                                    EmptyView()
+                                }
             }
         }
     }
