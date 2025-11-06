@@ -18,6 +18,8 @@ struct SummaryCard {
 struct HomePage: View {
     @Query var animals: [Animal]
     
+    let category: animalCategory
+    
     var animalTotals: [SummaryCard] {
         Species.allCases.map { species in
             SummaryCard(
@@ -37,6 +39,9 @@ struct HomePage: View {
     
     var body: some View {
         ZStack{
+            Color.beige.opacity(0.1)
+                .ignoresSafeArea()
+            
             NavigationStack{
                 ScrollView{
                     Text("Farm Overview")
@@ -46,38 +51,45 @@ struct HomePage: View {
                         ZStack{
                             RoundedRectangle(cornerRadius: 20)
                                 .frame(width:366, height: 120)
-                                .foregroundStyle(.ultraThinMaterial)
+                                .foregroundStyle(Color.init(uiColor: .white))
+//                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(style: StrokeStyle(lineWidth: 0.5)))
+                                .shadow(radius: 10)
                             NavigationLink{
                                 animalCategories()
                             } label: {
                                 HStack{
                                     VStack {
                                         Text("Total animals")
-                                            .font(.system(size: 20, weight: .bold, design: .default))
+                                            .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                            .foregroundStyle(Color.black)
+                                        
                                         
                                         Text("\(animals.count)")
                                             .font(.title3)
-                                            .fontWeight(.bold)
+                                            .fontWeight(.medium)
+                                            .foregroundStyle(Color.black)
                                     }
                                     .padding(.horizontal,   60)
-//                                     Spacer()
+                                    //                                     Spacer()
                                     
-//                                    Image(systemName: "arrowshape.forward.fill")
-//                                        .resizable()
-//                                        .frame(width:35, height: 30)
-//                                        .padding(.horizontal, 25)
+                                    //                                    Image(systemName: "arrowshape.forward.fill")
+                                    //                                        .resizable()
+                                    //                                        .frame(width:35, height: 30)
+                                    //                                        .padding(.horizontal, 25)
                                 }
                             }
                             .buttonStyle(.plain)
                         }
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 10) {
-                                    ForEach(animalTotals, id: \.name) { card in
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(animalTotals, id: \.name) { card in
+                                    NavigationLink(destination: singleAnimalSpecies(category: category)) {
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 18)
                                                 .frame(width: 140, height: 80)
-                                                .foregroundStyle(.ultraThinMaterial)
-                                            
+                                                .foregroundStyle(Color.init(uiColor: .white))
+                                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(style: StrokeStyle(lineWidth: 0.5)))
+                                                
                                             VStack {
                                                 Text(card.name)
                                                     .font(.headline)
@@ -85,52 +97,58 @@ struct HomePage: View {
                                                     .font(.title)
                                                     .fontWeight(.bold)
                                             }
+                                            .foregroundStyle(Color.primary)
                                         }
                                     }
+                                    .buttonStyle(.plain)
                                 }
-                                .padding(.horizontal)
                             }
-                            
-                            Divider()
-                            
-                            Text("Vaccinations")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                            VStack(alignment: .leading){
+                            .padding(.horizontal)
+                        }
+                        
+                        Divider()
+                        
+                        Text("Vaccinations")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Divider()
+                        VStack(alignment: .leading){
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Upcoming Vaccinations")
+                                    .font(.title)
+                                    .fontWeight(.semibold)
                                 
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Upcoming Vaccinations")
-                                        .font(.title)
-                                        .fontWeight(.semibold)
-                                    
-                                    if upcomingVaccinations.isEmpty {
-                                        Text("No upcoming vaccinations")
-                                            .foregroundColor(.gray)
-                                    } else {
-                                        ForEach(upcomingVaccinations) { animal in
+                                if upcomingVaccinations.isEmpty {
+                                    Text("No upcoming vaccinations")
+                                        .foregroundColor(.gray)
+                                } else {
+                                    ForEach(upcomingVaccinations) { animal in
+                                        NavigationLink(destination: animalProfile(animal: animal)){
                                             vaccinationRow(animal: animal, isMissed: false)
                                         }
                                     }
                                 }
+                            }
+                            .padding()
+                            
+                            Divider()
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Missed Vaccinations")
+                                    .font(.title)
+                                    .fontWeight(.semibold)
                                 
-                                Divider()
-                                
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Missed Vaccinations")
-                                        .font(.title)
-                                        .fontWeight(.semibold)
-                                    
-                                    if missedVaccinations.isEmpty {
-                                        Text("No missed vaccinations ")
-                                            .foregroundColor(.gray)
-                                    } else {
-                                        ForEach(missedVaccinations) { animal in
+                                if missedVaccinations.isEmpty {
+                                    Text("No missed vaccinations ")
+                                        .foregroundColor(.gray)
+                                } else {
+                                    ForEach(missedVaccinations) { animal in
+                                        NavigationLink(destination: animalProfile(animal: animal)){
                                             vaccinationRow(animal: animal, isMissed: true)
                                         }
                                     }
                                 }
-                                
-                                
                             }
                             .padding()
                             
@@ -163,13 +181,14 @@ struct HomePage: View {
                         .padding(.bottom)
                     }
                 }
-            .navigationBarBackButtonHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
         }
     }
-
+}
 
 
 #Preview {
-    HomePage()
+    HomePage(category: .init(name: "Pig", icon: .init("pig"), species: .pig) )
 }
+

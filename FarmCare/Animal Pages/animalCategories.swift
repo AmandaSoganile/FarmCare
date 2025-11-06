@@ -24,6 +24,8 @@ struct animalCategories: View {
     var body: some View {
         NavigationStack {
             ZStack{
+                Color.ivoryWhite
+                    .ignoresSafeArea()
                 ScrollView {
                     VStack(spacing: 17) {
                         Text("Animal Species")
@@ -36,18 +38,16 @@ struct animalCategories: View {
                                     .font(.title)
                                     .fontWeight(.bold)
                                     .foregroundStyle(Color.black)
-                                
-                                
-                                
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .fill(Color.gray.opacity(0.3))
+                                        RoundedRectangle(cornerRadius: 40)
+                                            .fill(Color.sageGreen.opacity(0.3))
                                             .frame(height: 200)
                                     )
                                     .frame(height: 200)
                                     .padding(.horizontal)
+                                    
                             }
                         }
                     }

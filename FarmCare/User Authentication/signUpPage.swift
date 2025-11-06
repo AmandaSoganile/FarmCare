@@ -142,7 +142,7 @@ struct signUpPage: View {
                     }
                 }
                 .padding(.trailing, 25)
-                NavigationLink(destination: HomePage(), isActive: $navigateToHome) {
+                NavigationLink(destination: HomePage(category: .init(name: "Pig", icon: .init("pig"), species: .pig)), isActive: $navigateToHome) {
                                    EmptyView()
                                }
             }

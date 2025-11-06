@@ -10,7 +10,7 @@ import SwiftUI
 struct tabview: View {
     var body: some View {
         TabView {
-            HomePage()
+            HomePage(category: .init(name: "Pig", icon: .init("pig"), species: .pig))
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }

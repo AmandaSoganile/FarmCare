@@ -17,7 +17,7 @@ struct FarmCareApp: App {
     var body: some Scene {
         WindowGroup {
             if authViewModel.isAuthenticated{
-                HomePage()
+                HomePage(category: .init(name: "Pig", icon: .init("pig"), species: .pig))
                     .environmentObject(authViewModel)
             } else {
                 ContentView()
