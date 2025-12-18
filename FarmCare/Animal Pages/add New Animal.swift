@@ -195,7 +195,6 @@ struct add_New_Animal: View {
                         Button {
                             
                             let animalToSave = Animal(
-                                id: UUID(),
                                 name: name,
                                 species: selectedOption,
                                 breed: breed,

@@ -212,7 +212,6 @@ extension Species {
 
 #Preview {
     let previewAnimal = Animal(
-        id: UUID(),
         name: "Bessie",
         species: .cow,
         breed: "Holstein",
@@ -224,5 +223,5 @@ extension Species {
         lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
         notes: "Lively and eating well."
     )
-    return animalProfile(animal: previewAnimal)
+    animalProfile(animal: previewAnimal)
 }
