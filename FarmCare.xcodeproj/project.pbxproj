@@ -19,9 +19,22 @@
 		4DE6A40E2E9FAA8F007377DA /* FarmCare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FarmCare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4D5973962EF4579E00A93FF0 /* Exceptions for "FarmCare" folder in "FarmCare" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4DE6A40D2E9FAA8F007377DA /* FarmCare */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4DE6A4102E9FAA8F007377DA /* FarmCare */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4D5973962EF4579E00A93FF0 /* Exceptions for "FarmCare" folder in "FarmCare" target */,
+			);
 			path = FarmCare;
 			sourceTree = "<group>";
 		};
@@ -159,6 +172,8 @@
 /* Begin XCBuildConfiguration section */
 		4DE6A4172E9FAA91007377DA /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 4DE6A4102E9FAA8F007377DA /* FarmCare */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -222,6 +237,8 @@
 		};
 		4DE6A4182E9FAA91007377DA /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 4DE6A4102E9FAA8F007377DA /* FarmCare */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -285,6 +302,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FarmCare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FarmCare;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -318,6 +336,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FarmCare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FarmCare;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
