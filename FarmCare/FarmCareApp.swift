@@ -19,9 +19,11 @@ struct FarmCareApp: App {
             if authViewModel.isAuthenticated{
                 HomePage(category: .init(name: "Pig", icon: .init("pig"), species: .pig))
                     .environmentObject(authViewModel)
+                    .environmentObject(AnimalViewModel())
             } else {
                 ContentView()
                     .environmentObject(authViewModel)
+                    .environmentObject(AnimalViewModel())
             }
         }
         .modelContainer(for: Animal.self)

@@ -39,8 +39,9 @@ class Animal {
     var vaccinationFrequency: VaccinationInterval
     var lastVaccinationDate: Date
     var notes: String
+    var ownerID : String
 
-    init(name: String, species: Species, breed: String, weight: Int, feedType: String, feedSchedule: Int, vaccinationType: String, vaccinationFrequency: VaccinationInterval, lastVaccinationDate: Date, notes: String) {
+    init(name: String, species: Species, breed: String, weight: Int, feedType: String, feedSchedule: Int, vaccinationType: String, vaccinationFrequency: VaccinationInterval, lastVaccinationDate: Date, notes: String, ownerID: String) {
         self.name = name
         self.species = species
         self.breed = breed
@@ -51,6 +52,7 @@ class Animal {
         self.vaccinationFrequency = vaccinationFrequency
         self.lastVaccinationDate = lastVaccinationDate
         self.notes = notes
+        self.ownerID = ownerID
     }
     
     var nextVaccinationDate: Date {
@@ -106,29 +108,30 @@ enum VaccinationInterval: Int, CaseIterable, Identifiable, Codable {
 
 var sampleAnimals: [Animal] = [
     
-    Animal(name: "Bessie", species: .cow, breed: "Holstein", weight: 500, feedType: "Hay", feedSchedule: 2, vaccinationType: "Rabies", vaccinationFrequency: .fourWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -24, to: Date())!, notes: "Due soon"),
+    Animal(name: "Bessie", species: .cow, breed: "Holstein", weight: 500, feedType: "Hay", feedSchedule: 2, vaccinationType: "Rabies", vaccinationFrequency: .fourWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -24, to: Date())!, notes: "Due soon", ownerID: "sampleOwner"),
     
-    Animal(name: "Clucky", species: .chicken, breed: "Leghorn", weight: 5, feedType: "Corn", feedSchedule: 1, vaccinationType: "Newcastle", vaccinationFrequency: .twoWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, notes: "Due soon"),
+    Animal(name: "Clucky", species: .chicken, breed: "Leghorn", weight: 5, feedType: "Corn", feedSchedule: 1, vaccinationType: "Newcastle", vaccinationFrequency: .twoWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, notes: "Due soon", ownerID: "sampleOwner"),
     
-    Animal(name: "Oinky", species: .pig, breed: "Yorkshire", weight: 150, feedType: "Pellets", feedSchedule: 2, vaccinationType: "Swine Flu", vaccinationFrequency: .threeWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -17, to: Date())!, notes: "Due soon"),
+    Animal(name: "Oinky", species: .pig, breed: "Yorkshire", weight: 150, feedType: "Pellets", feedSchedule: 2, vaccinationType: "Swine Flu", vaccinationFrequency: .threeWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -17, to: Date())!, notes: "Due soon", ownerID: "sampleOwner"),
 
-    Animal(name: "Daisy", species: .cow, breed: "Guernsey", weight: 520, feedType: "Grass", feedSchedule: 1, vaccinationType: "Foot & Mouth", vaccinationFrequency: .twoWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, notes: "Missed last vaccination"),
+    Animal(name: "Daisy", species: .cow, breed: "Guernsey", weight: 520, feedType: "Grass", feedSchedule: 1, vaccinationType: "Foot & Mouth", vaccinationFrequency: .twoWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, notes: "Missed last vaccination", ownerID: "sampleOwner"),
     
-    Animal(name: "Henrietta", species: .chicken, breed: "Sussex", weight: 7, feedType: "Corn", feedSchedule: 1, vaccinationType: "Newcastle", vaccinationFrequency: .oneWeek, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, notes: "Overdue"),
+    Animal(name: "Henrietta", species: .chicken, breed: "Sussex", weight: 7, feedType: "Corn", feedSchedule: 1, vaccinationType: "Newcastle", vaccinationFrequency: .oneWeek, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -10, to: Date())!, notes: "Overdue", ownerID: "sampleOwner"),
 
-    Animal(name: "MooMoo", species: .cow, breed: "Jersey", weight: 480, feedType: "Grain", feedSchedule: 1, vaccinationType: "Foot & Mouth", vaccinationFrequency: .fourWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "Healthy"),
+    Animal(name: "MooMoo", species: .cow, breed: "Jersey", weight: 480, feedType: "Grain", feedSchedule: 1, vaccinationType: "Foot & Mouth", vaccinationFrequency: .fourWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "Healthy", ownerID: "sampleOwner"),
     
-    Animal(name: "Feathers", species: .chicken, breed: "Rhode Island Red", weight: 6, feedType: "Mixed", feedSchedule: 1, vaccinationType: "Marek's Disease", vaccinationFrequency: .sixWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -15, to: Date())!, notes: "Active"),
+    Animal(name: "Feathers", species: .chicken, breed: "Rhode Island Red", weight: 6, feedType: "Mixed", feedSchedule: 1, vaccinationType: "Marek's Disease", vaccinationFrequency: .sixWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -15, to: Date())!, notes: "Active", ownerID: "sampleOwner"),
     
-    Animal(name: "Porky", species: .pig, breed: "Berkshire", weight: 140, feedType: "Hay", feedSchedule: 2, vaccinationType: "Erysipelas", vaccinationFrequency: .twelveWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -30, to: Date())!, notes: "On schedule"),
+    Animal(name: "Porky", species: .pig, breed: "Berkshire", weight: 140, feedType: "Hay", feedSchedule: 2, vaccinationType: "Erysipelas", vaccinationFrequency: .twelveWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -30, to: Date())!, notes: "On schedule", ownerID: "sampleOwner"),
     
-    Animal(name: "Bacon", species: .pig, breed: "Hampshire", weight: 160, feedType: "Mixed", feedSchedule: 2, vaccinationType: "Swine Fever", vaccinationFrequency: .twentyFourWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -40, to: Date())!, notes: "Stable"),
+    Animal(name: "Bacon", species: .pig, breed: "Hampshire", weight: 160, feedType: "Mixed", feedSchedule: 2, vaccinationType: "Swine Fever", vaccinationFrequency: .twentyFourWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -40, to: Date())!, notes: "Stable", ownerID: "sampleOwner"),
     
-    Animal(name: "Buttercup", species: .cow, breed: "Ayrshire", weight: 510, feedType: "Hay & Grain", feedSchedule: 2, vaccinationType: "Rabies", vaccinationFrequency: .eightWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, notes: "Routine checkup soon")
+    Animal(name: "Buttercup", species: .cow, breed: "Ayrshire", weight: 510, feedType: "Hay & Grain", feedSchedule: 2, vaccinationType: "Rabies", vaccinationFrequency: .eightWeeks, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -20, to: Date())!, notes: "Routine checkup soon", ownerID: "sampleOwner")
 ]
 
 
 
 
 var newAnimals : [Animal] = []
+
 

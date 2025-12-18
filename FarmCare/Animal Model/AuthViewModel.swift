@@ -17,35 +17,39 @@ class AuthViewModel: ObservableObject{
     @Published var password: String = ""
     @Published var name: String = ""
     @Published var errorMessage: String? = nil
+    @Published var userId: String? = nil
     
     private let client = SupabaseManager.shared.client
     
     func signUpWithEmail(name: String, email: String, password: String) async throws {
         do {
             let response = try await client.auth.signUp(email: email, password: password)
+            let user = response.user
+            let userId = user.id
             
-             let userId = response.user.id
-                
-                 try await client.database
+            try await client.database
                 .from("profiles")
                 .insert(["id" : userId.uuidString, "name" : name, "email" : email])
                 .execute()
-            
-            errorMessage = ""
-            print("User signed up successfully : \(name)")
-            
-            isAuthenticated = true
-        }catch{
-            errorMessage = "Sign up failed : \(error.localizedDescription)"
+            self.userId = user.id.uuidString
+            self.isAuthenticated = true
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
+            throw error
         }
     }
     
     func signInWithEmail(email: String, password: String) async throws {
-        do{
-            try await client.auth.signIn(email: email, password: password)
-            isAuthenticated = true
+        do {
+            let response = try await client.auth.signIn(email: email, password: password)
+            let user = response.user
+            self.userId = user.id.uuidString
+            self.isAuthenticated = true
+            self.errorMessage = nil
         } catch {
-            errorMessage = "Sign in failed : \(error.localizedDescription)"
+            self.errorMessage = error.localizedDescription
+            throw error
         }
     }
     
@@ -53,6 +57,7 @@ class AuthViewModel: ObservableObject{
         do{
             try await client.auth.signOut()
             isAuthenticated = false
+            self.userId = nil
         } catch {
             print("Sign out failed : \(error.localizedDescription)")
         }
@@ -64,6 +69,7 @@ class AuthViewModel: ObservableObject{
             isAuthenticated = session != nil
         } catch {
             isAuthenticated = false
+            userId = nil
         }
     }
     

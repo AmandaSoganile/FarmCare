@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct signInPage: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var showPassword: Bool = false
     @State private var navigateToHome : Bool = false
     @StateObject private var viewModel = AuthViewModel()
+    @EnvironmentObject var animalVM: AnimalViewModel
     
     var body: some View {
         NavigationStack{
@@ -60,10 +63,15 @@ struct signInPage: View {
                
                 
                 Button {
-                    Task { try await viewModel.signInWithEmail(email: viewModel.email, password: viewModel.password)
+                    Task {
+                        try await viewModel.signInWithEmail(email: viewModel.email, password: viewModel.password)
+                        
                         if viewModel.isAuthenticated {
+                            if let uid = viewModel.userId {
+                                animalVM.loadAnimals(context: modelContext , ownerId: uid)
+                            }
                             navigateToHome = true
-                        }else {
+                        } else {
                             viewModel.errorMessage = "Please fix the errors before signing up."
                         }
                     }
@@ -112,4 +120,3 @@ struct signInPage: View {
 #Preview {
     signInPage()
 }
-

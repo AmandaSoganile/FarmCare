@@ -221,7 +221,8 @@ extension Species {
         vaccinationType: "Rabies",
         vaccinationFrequency: .sixWeeks,
         lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
-        notes: "Lively and eating well."
+        notes: "Lively and eating well.",
+        ownerID: ""
     )
     animalProfile(animal: previewAnimal)
 }

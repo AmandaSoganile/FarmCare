@@ -17,19 +17,21 @@ struct signUpPage: View {
     @State private var navigateToHome = false
     @State private var showConfirmPassword: Bool = false
     @StateObject private var viewModel = AuthViewModel()
+    @EnvironmentObject var animalVM: AnimalViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var ModelContext
     
     var body: some View {
         NavigationStack{
-        Text("Create your Account")
-            .font(.largeTitle)
-            .fontWeight(.bold)
-            .padding()
-        
+            Text("Create your Account")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding()
+            
             VStack{
                 VStack(alignment: .leading){
                     CustomTextField(title: "Name", text: $viewModel.name, placeholder: "Name")
-                        
+                    
                 }
                 
                 
@@ -66,8 +68,8 @@ struct signUpPage: View {
                     .foregroundColor(viewModel.password.count < 8 ? .red : .green)
                     .font(.footnote)
                     .padding(.leading, 10)
-            
-            
+                
+                
                 VStack(alignment: .leading){
                     Text("Confirm Password")
                         .font(.title3)
@@ -105,8 +107,11 @@ struct signUpPage: View {
                     Task{
                         try await viewModel.signUpWithEmail(name : viewModel.name, email: viewModel.email, password: viewModel.password)
                         if viewModel.isAuthenticated {
-                            navigateToHome = true
-                        }else {
+                            if let uid = viewModel.userId {
+                                animalVM.loadAnimals(context: ModelContext, ownerId: uid)
+                                navigateToHome = true
+                            }
+                        } else {
                             viewModel.errorMessage = "Please fix the errors before signing up."
                         }
                     }
@@ -143,14 +148,14 @@ struct signUpPage: View {
                 }
                 .padding(.trailing, 25)
                 NavigationLink(destination: HomePage(category: .init(name: "Pig", icon: .init("pig"), species: .pig)), isActive: $navigateToHome) {
-                                   EmptyView()
-                               }
+                    EmptyView()
+                }
             }
         }
         .navigationBarBackButtonHidden(false)
     }
 }
-        
+
 
 #Preview {
     signUpPage()

@@ -204,7 +204,8 @@ struct add_New_Animal: View {
                                 vaccinationType: vaccinationType,
                                 vaccinationFrequency: selectedVaccinationFrequency,
                                 lastVaccinationDate: selectedVaccinationDate,
-                                notes: ""
+                                notes: "",
+                                ownerID: ""
                             )
 
                             context.insert(animalToSave)
