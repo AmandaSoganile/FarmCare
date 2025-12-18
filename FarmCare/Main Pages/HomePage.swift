@@ -37,16 +37,46 @@ struct HomePage: View {
     
     var body: some View {
         ZStack{
+            Color.green.opacity(0.025)
+                .ignoresSafeArea()
+            
             NavigationStack{
-                ScrollView{
-                    Text("Farm Overview")
-                        .font(Font.largeTitle.bold())
+
+                HStack {
                     
+                    Image("FarmCare Transparent")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 65, height: 65)
+                    
+                    Spacer()
+                    
+                    Text("FarmCare")
+                        .font(.largeTitle.bold())
+                        .fontDesign(.rounded)
+                    
+                    Spacer()
+                    
+                    NavigationLink(destination: settings()) {
+                        Image(systemName: "gearshape.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .tint(Color.black)
+                        
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.green.opacity(0.5))
+//                Divider()
+                
+                ScrollView{
                     VStack(spacing: 16) {
                         ZStack{
                             RoundedRectangle(cornerRadius: 20)
                                 .frame(width:366, height: 120)
                                 .foregroundStyle(.ultraThinMaterial)
+                                .shadow(radius: 1)
                             NavigationLink{
                                 animalCategories()
                             } label: {
@@ -59,115 +89,87 @@ struct HomePage: View {
                                             .font(.title3)
                                             .fontWeight(.bold)
                                     }
-                                    .padding(.horizontal,   60)
-//                                     Spacer()
-                                    
-//                                    Image(systemName: "arrowshape.forward.fill")
-//                                        .resizable()
-//                                        .frame(width:35, height: 30)
-//                                        .padding(.horizontal, 25)
+                                    .padding(.horizontal, 60)
                                 }
                             }
                             .buttonStyle(.plain)
                         }
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 10) {
-                                    ForEach(animalTotals, id: \.name) { card in
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 18)
-                                                .frame(width: 140, height: 80)
-                                                .foregroundStyle(.ultraThinMaterial)
-                                            
-                                            VStack {
-                                                Text(card.name)
-                                                    .font(.headline)
-                                                Text("\(card.total)")
-                                                    .font(.title)
-                                                    .fontWeight(.bold)
-                                            }
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(animalTotals, id: \.name) { card in
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 18)
+                                            .frame(width: 140, height: 80)
+                                            .foregroundStyle(.ultraThinMaterial)
+                                            .shadow(radius: 1)
+                                        
+                                        VStack {
+                                            Text(card.name)
+                                                .font(.headline)
+                                            Text("\(card.total)")
+                                                .font(.title)
+                                                .fontWeight(.bold)
                                         }
                                     }
                                 }
-                                .padding(.horizontal)
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        Divider()
+                        
+                       
+                            
+                        Text("Vaccinations")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .fontDesign(.rounded)
+                        
+                        VStack(alignment: .leading){
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Upcoming Vaccinations")
+                                    .font(.title)
+                                    .fontWeight(.semibold)
+                                
+                                if upcomingVaccinations.isEmpty {
+                                    Text("No upcoming vaccinations")
+                                        .foregroundColor(.gray)
+                                } else {
+                                    ForEach(upcomingVaccinations) { animal in
+                                        vaccinationRow(animal: animal, isMissed: false)
+                                    }
+                                }
                             }
                             
                             Divider()
                             
-                            Text("Vaccinations")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                            VStack(alignment: .leading){
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Missed Vaccinations")
+                                    .font(.title)
+                                    .fontWeight(.semibold)
                                 
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Upcoming Vaccinations")
-                                        .font(.title)
-                                        .fontWeight(.semibold)
-                                    
-                                    if upcomingVaccinations.isEmpty {
-                                        Text("No upcoming vaccinations")
-                                            .foregroundColor(.gray)
-                                    } else {
-                                        ForEach(upcomingVaccinations) { animal in
-                                            vaccinationRow(animal: animal, isMissed: false)
-                                        }
+                                if missedVaccinations.isEmpty {
+                                    Text("No missed vaccinations ")
+                                        .foregroundColor(.gray)
+                                } else {
+                                    ForEach(missedVaccinations) { animal in
+                                        vaccinationRow(animal: animal, isMissed: true)
                                     }
                                 }
-                                
-                                Divider()
-                                
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Missed Vaccinations")
-                                        .font(.title)
-                                        .fontWeight(.semibold)
-                                    
-                                    if missedVaccinations.isEmpty {
-                                        Text("No missed vaccinations ")
-                                            .foregroundColor(.gray)
-                                    } else {
-                                        ForEach(missedVaccinations) { animal in
-                                            vaccinationRow(animal: animal, isMissed: true)
-                                        }
-                                    }
-                                }
-                                
-                                
                             }
-                            .padding()
                             
-                            VStack{
-                                
-                                Spacer()
-                                
-                                HStack {
-                                    Spacer()
-                                    
-                                    NavigationLink{
-                                        add_New_Animal()
-                                    } label: {
-                                        
-                                        ZStack {
-                                            Circle()
-                                                .frame(width: 60)
-                                                .foregroundStyle(Color.black)
-                                            
-                                            Image(systemName: "plus")
-                                                .resizable()
-                                                .foregroundStyle(Color.white)
-                                                .frame(width: 25, height: 25)
-                                        }
-                                    }
-                                }
-                                .padding()
-                            }
+                            
                         }
-                        .padding(.bottom)
+                        .padding()
                     }
+                    .padding(.bottom)
                 }
-            .navigationBarBackButtonHidden(true)
             }
+            .navigationBarBackButtonHidden(true)
         }
     }
-
+}
 
 
 #Preview {

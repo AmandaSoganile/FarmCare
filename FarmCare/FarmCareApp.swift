@@ -8,8 +8,6 @@
 import SwiftUI
 import SwiftData
 
-
-
 @main
 struct FarmCareApp: App {
  @StateObject private var authViewModel = AuthViewModel()
@@ -17,7 +15,7 @@ struct FarmCareApp: App {
     var body: some Scene {
         WindowGroup {
             if authViewModel.isAuthenticated{
-                HomePage()
+                tabview()
                     .environmentObject(authViewModel)
             } else {
                 ContentView()

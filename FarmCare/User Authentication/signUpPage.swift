@@ -21,6 +21,10 @@ struct signUpPage: View {
         NavigationStack {
             VStack {
                 
+                Image("FarmCare Transparent")
+                    .resizable()
+                    .frame(width: 200, height: 150)
+                
                 Text("Create your Account")
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -141,7 +145,7 @@ struct signUpPage: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 40)
                             .frame(height: 60)
-                            .foregroundStyle(Color.black.gradient)
+                            .foregroundStyle((Color(red: 7/255, green: 28/255, blue: 24/255)).gradient)
 
                         Text("SIGN UP")
                             .font(.title2)
@@ -168,7 +172,7 @@ struct signUpPage: View {
                     }
                 }
             .navigationDestination(isPresented: $navigateToHome) {
-                HomePage()
+                tabview()
             }
         }
     }
@@ -178,4 +182,5 @@ struct signUpPage: View {
 
 #Preview {
     signUpPage()
+        .environmentObject(AuthViewModel())
 }
