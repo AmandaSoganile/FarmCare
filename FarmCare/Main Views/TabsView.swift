@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct tabview: View {
+struct TabsView: View {
     @State private var showingSheet = false
     var body: some View {
         TabView {
@@ -25,17 +25,17 @@ struct tabview: View {
                 }
             
             
-            animalCategories()
+            AnimalCategories()
                 .tabItem {
                     Label("Animal", systemImage: "pawprint.fill")
                 }
         }
         .sheet(isPresented: $showingSheet) {
-                    add_New_Animal()
-                }
+            AddNewAnimal()
+        }
     }
 }
 
 #Preview {
-    tabview()
+    TabsView()
 }

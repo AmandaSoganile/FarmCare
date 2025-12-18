@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct animalProfile: View {
+struct AnimalProfile: View {
     @Environment(\.modelContext) private var context
     @Bindable var animal: Animal
     @State private var isEditing: Bool = false
@@ -22,7 +22,7 @@ struct animalProfile: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 
-                //animal name and health status
+                //Animal name and health status
                 HStack(alignment: .center) {
                     Image(animal.species.imageResource)
                         .resizable()
@@ -53,7 +53,7 @@ struct animalProfile: View {
                         .font(.title3)
                         .fontWeight(.semibold)
                     
-                    // health summary
+                    //Health summary
                     HStack {
                         VStack(alignment: .leading, spacing: 10) {
                             Label("Feed: \(animal.feedType)", systemImage: "leaf.fill")
@@ -77,7 +77,7 @@ struct animalProfile: View {
                 DisclosureGroup(isExpanded: $showDetails) {
                     
                     
-                    // full details
+                    //Full details
                     VStack(alignment: .leading, spacing: 10) {
                         
                         Text("Name: \(animal.name)")
@@ -116,7 +116,7 @@ struct animalProfile: View {
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(12)
                             .onChange(of: notes) { _ in
-                               
+                                
                                 animal.notes = notes
                                 do {
                                     try context.save()
@@ -186,29 +186,6 @@ struct animalProfile: View {
     }
 }
 
-enum HealthStatus {
-    case healthy, monitor, needsAttention
-    
-    var color: Color {
-        switch self {
-        case .healthy: return .green
-        case .monitor: return .yellow
-        case .needsAttention: return .red
-        }
-    }
-}
-
-
-extension Species {
-    var speciesDisplayName: String {
-        switch self {
-        case .cow: return "Cow"
-        case .chicken: return "Chicken"
-        case .pig: return "Pig"
-        }
-    }
-}
-
 
 #Preview {
     let previewAnimal = Animal(
@@ -223,5 +200,5 @@ extension Species {
         lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
         notes: "Lively and eating well."
     )
-    animalProfile(animal: previewAnimal)
+    AnimalProfile(animal: previewAnimal)
 }

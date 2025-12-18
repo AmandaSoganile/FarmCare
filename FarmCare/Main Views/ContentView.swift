@@ -24,7 +24,7 @@ struct ContentView: View {
                     .scaleEffect(farmLogo ? 1.0 : 0.8)
                     .opacity(farmLogo ? 1.0 : 0.0)
                     .animation(.easeInOut(duration: 1.5), value: farmLogo)
-                    
+                
                 
                 
                 
@@ -32,14 +32,14 @@ struct ContentView: View {
                     .font(.title3)
                     .fontWeight(.heavy)
                     .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-
+                
                     .padding()
                 
                 
                 Spacer()
                 
-                NavigationLink { 
-                    signInPage()
+                NavigationLink {
+                    SignIn()
                     
                 } label: {
                     

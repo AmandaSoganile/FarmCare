@@ -8,10 +8,11 @@
 import SwiftUI
 import SwiftData
 
-struct singleAnimalSpecies: View {
+struct SingleAnimalSpecies: View {
     @Query var animals: [Animal]
+    @Environment(\.modelContext) private var modelContext
     
-    let category: animalCategory
+    let category: AnimalCategory
     
     var body: some View {
         NavigationStack{
@@ -24,12 +25,15 @@ struct singleAnimalSpecies: View {
                 .edgesIgnoringSafeArea(.all)
                 VStack{
                     NavigationStack {
-                        List(animals.filter { $0.species == category.species }) { animal in
-                            NavigationLink{
-                                animalProfile(animal: animal)
-                            } label: {
-                                singleAnimalRow(animal: animal)
+                        List {
+                            ForEach(animals.filter { $0.species == category.species }) { animal in
+                                NavigationLink {
+                                    AnimalProfile(animal: animal)
+                                } label: {
+                                    SingleAnimalRow(animal: animal)
+                                }
                             }
+                            .onDelete(perform: deleteAnimals)
                         }
                         .navigationTitle(category.name)
                         .scrollContentBackground(.hidden)
@@ -44,7 +48,7 @@ struct singleAnimalSpecies: View {
                         Spacer()
                         
                         NavigationLink{
-                            add_New_Animal()
+                            AddNewAnimal()
                         } label: {
                             
                             ZStack {
@@ -64,10 +68,19 @@ struct singleAnimalSpecies: View {
             }
         }
     }
+    func deleteAnimals(_ indexSet: IndexSet) {
+        for index in indexSet {
+            let animal = animals[index]
+            modelContext.delete(animal)
+        }
+    }
 }
+
+
 
 
 
 #Preview {
-    singleAnimalSpecies(category: animalCategory(name: "Cattle", icon: Image("cow"), species: .cow))
+    SingleAnimalSpecies(category: AnimalCategory(name: "Cattle", icon: Image("cow"), species: .cow))
 }
+
