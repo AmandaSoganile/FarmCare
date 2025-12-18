@@ -12,7 +12,6 @@ enum Constants {
         guard let key = Bundle.main.infoDictionary?["SUPABASE_KEY"] as? String else {
             fatalError("API_KEY not set in Info.plist")
         }
-        print("Key \(key)")
         return key
     }()
 
@@ -21,7 +20,6 @@ enum Constants {
         guard let url = Bundle.main.infoDictionary?["SUPABASE_URL"] as? String else {
             fatalError("SUPABASE_URL not set in Info.plist")
         }
-        print("URL https://\(url)")
         return URL(string: "https://\(url)")!
     }()
 }
