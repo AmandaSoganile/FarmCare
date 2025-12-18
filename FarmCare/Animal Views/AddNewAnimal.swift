@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct add_New_Animal: View {
+struct AddNewAnimal: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     
@@ -258,6 +258,6 @@ struct add_New_Animal: View {
 
 
 #Preview {
-    add_New_Animal()
+    AddNewAnimal()
 }
 

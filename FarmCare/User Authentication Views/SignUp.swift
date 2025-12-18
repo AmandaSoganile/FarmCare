@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct signUpPage: View {
+struct SignUp: View {
     @State private var confirmPassword: String = ""
     @State private var showPassword: Bool = false
     @State private var showConfirmPassword: Bool = false
@@ -159,7 +159,7 @@ struct signUpPage: View {
                 HStack {
                     Text("Already have an account?")
                     NavigationLink("Sign In") {
-                        signInPage()
+                        SignIn()
                     }
                 }
                 .padding(.bottom, 20)
@@ -172,7 +172,7 @@ struct signUpPage: View {
                     }
                 }
             .navigationDestination(isPresented: $navigateToHome) {
-                tabview()
+                TabsView()
             }
         }
     }
@@ -181,6 +181,6 @@ struct signUpPage: View {
 
 
 #Preview {
-    signUpPage()
+    SignUp()
         .environmentObject(AuthViewModel())
 }

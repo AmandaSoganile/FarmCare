@@ -7,20 +7,8 @@
 
 import SwiftUI
 
-struct animalCategory: Identifiable {
-    let id = UUID()
-    let name: String
-    let icon: Image
-    let species: Species
-}
 
-struct animalCategories: View {
-    let categories = [
-        animalCategory(name: "Cattle", icon: Image("cow"), species: .cow),
-        animalCategory(name: "Chicken", icon: Image("chicken"), species: .chicken),
-        animalCategory(name: "Pig", icon: Image("pig"), species: .pig)
-    ]
-    
+struct AnimalCategories: View {
     var body: some View {
         NavigationStack {
             ZStack{
@@ -38,7 +26,7 @@ struct animalCategories: View {
                             .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
                         
                         ForEach(categories) { category in
-                            NavigationLink(destination: singleAnimalSpecies(category: category)) {
+                            NavigationLink(destination: SingleAnimalSpecies(category: category)) {
                                 
                                 HStack(spacing: 29){
                                     Image(category.species.imageResource)
@@ -52,20 +40,20 @@ struct animalCategories: View {
                                     
                                 }
                                 
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 28)
-                                            .fill(Color.white)
-                                            .frame(height: 200)
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 28)
-                                                    .stroke(Color.white, lineWidth: 2)
-                                            )
-                                            .shadow(radius: 5)
-                                    )
-                                    .frame(height: 200)
-                                    .padding(.horizontal)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 28)
+                                        .fill(Color.white)
+                                        .frame(height: 200)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 28)
+                                                .stroke(Color.white, lineWidth: 2)
+                                        )
+                                        .shadow(radius: 5)
+                                )
+                                .frame(height: 200)
+                                .padding(.horizontal)
                             }
                         }
                     }
@@ -80,7 +68,7 @@ struct animalCategories: View {
                         Spacer()
                         
                         NavigationLink{
-                            add_New_Animal()
+                            AddNewAnimal()
                         } label: {
                             
                             ZStack {
@@ -98,7 +86,6 @@ struct animalCategories: View {
                     }
                     .padding()
                 }
-                
             }
         }
     }
@@ -109,6 +96,6 @@ struct animalCategories: View {
 
 #Preview {
     NavigationStack {
-        animalCategories()
+        AnimalCategories()
     }
 }

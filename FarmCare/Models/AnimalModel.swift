@@ -25,6 +25,14 @@ enum Species: String, CaseIterable, Codable {
             return .pigHead
         }
     }
+    
+    var speciesDisplayName: String {
+        switch self {
+        case .cow: return "Cow"
+        case .chicken: return "Chicken"
+        case .pig: return "Pig"
+        }
+    }
 }
 
 @Model
@@ -128,7 +136,21 @@ var sampleAnimals: [Animal] = [
 ]
 
 
-
+let sampleAnimal = Animal( name: "Bessie", species: .cow, breed: "Holstein", weight: 456, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: .oneWeek, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "OLD")
 
 var newAnimals : [Animal] = []
+
+enum HealthStatus {
+    case healthy, monitor, needsAttention
+    
+    var color: Color {
+        switch self {
+        case .healthy: return .green
+        case .monitor: return .yellow
+        case .needsAttention: return .red
+        }
+    }
+}
+
+
 

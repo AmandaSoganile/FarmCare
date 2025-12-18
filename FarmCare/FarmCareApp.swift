@@ -15,7 +15,7 @@ struct FarmCareApp: App {
     var body: some Scene {
         WindowGroup {
             if authViewModel.isAuthenticated{
-                tabview()
+                TabsView()
                     .environmentObject(authViewModel)
             } else {
                 ContentView()

@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct signInPage: View {
+struct SignIn: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var showPassword: Bool = false
     @State private var navigateToHome : Bool = false
     @StateObject private var viewModel = AuthViewModel()
+    @State private var showingAlert = false
     
     var body: some View {
         NavigationStack{
@@ -67,7 +68,8 @@ struct signInPage: View {
                         if viewModel.isAuthenticated {
                             navigateToHome = true
                         }else {
-                            viewModel.errorMessage = "Please fix the errors before signing in."
+                            viewModel.errorMessage = "Please check that all details are correct"
+                            showingAlert = true
                         }
                     }
                 } label: {
@@ -96,23 +98,32 @@ struct signInPage: View {
                     Text("Dont have an account?")
                     
                     NavigationLink{
-                        signUpPage()
+                        SignUp()
                     } label: {
                         Text("Sign Up")
                     }
                 }
                 .padding(.trailing, 25)
-                NavigationLink(destination: tabview(), isActive: $navigateToHome) {
+                NavigationLink(destination: TabsView(), isActive: $navigateToHome) {
                     EmptyView()
                 }
             }
         }
+        .alert("Sign In Error", isPresented: $showingAlert) {
+                    
+                    Button("OK", role: .cancel) {
+                        print("Alert dismissed")
+                    }
+                } message: {
+                    // Add an optional message with more details
+                    Text(viewModel.errorMessage ?? "Please check your details")
+                }
     }
 }
 
 
 
 #Preview {
-    signInPage()
+    SignIn()
 }
 

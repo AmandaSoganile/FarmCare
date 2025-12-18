@@ -7,9 +7,7 @@
 
 import SwiftUI
 
-let sampleAnimal = Animal( name: "Bessie", species: .cow, breed: "Holstein", weight: 456, feedType: "Hay", feedSchedule: 6, vaccinationType: "Rabies", vaccinationFrequency: .oneWeek, lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, notes: "OLD")
-
-struct singleAnimalRow: View {
+struct SingleAnimalRow: View {
     let animal: Animal
     
     var body: some View {
@@ -37,6 +35,6 @@ struct singleAnimalRow: View {
 }
 
 #Preview {
-   
-    singleAnimalRow(animal: sampleAnimal)
+    
+    SingleAnimalRow(animal: sampleAnimal)
 }
