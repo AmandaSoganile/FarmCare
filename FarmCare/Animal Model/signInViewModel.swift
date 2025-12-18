@@ -24,9 +24,9 @@ class AuthViewModel: ObservableObject{
         do {
             let response = try await client.auth.signUp(email: email, password: password)
             
-             let userId = response.user.id
-                
-                 try await client.database
+            let userId = response.user.id
+            
+            try await client.database
                 .from("profiles")
                 .insert(["id" : userId.uuidString, "name" : name, "email" : email])
                 .execute()
@@ -35,9 +35,16 @@ class AuthViewModel: ObservableObject{
             print("User signed up successfully : \(name)")
             
             isAuthenticated = true
+            
+            if response.session != nil {
+                isAuthenticated = true
+            }
+            
         }catch{
             errorMessage = "Sign up failed : \(error.localizedDescription)"
         }
+        
+        
     }
     
     func signInWithEmail(email: String, password: String) async throws {
@@ -67,7 +74,20 @@ class AuthViewModel: ObservableObject{
         }
     }
     
-    
+    init() {
+        Task {
+            for await state in await client.auth.authStateChanges {
+                switch state.event {
+                case .signedIn:
+                    isAuthenticated = true
+                case .signedOut:
+                    isAuthenticated = false
+                default:
+                    break
+                }
+            }
+        }
+    }
     
     func isValidEmail() -> Bool {
         let emailFormat = "(?:[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+(?:\\.[\\p{L}0-9!#$%\\&'*+/=?\\^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[\\p{L}0-9](?:[a-z0-9-]*[\\p{L}0-9])?\\.)+[\\p{L}0-9](?:[\\p{L}0-9-]*[\\p{L}0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[\\p{L}0-9-]*[\\p{L}0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
@@ -75,5 +95,5 @@ class AuthViewModel: ObservableObject{
         return emailPredicate.evaluate(with: email)
     }
     
-
+    
 }

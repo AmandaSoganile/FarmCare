@@ -16,11 +16,11 @@ struct signInPage: View {
     
     var body: some View {
         NavigationStack{
-                Text("Sign in")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
-
+            Text("Sign in")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding()
+            
             
             
             //name textfield
@@ -57,14 +57,14 @@ struct signInPage: View {
                     .frame(width: 366, height: 50)
                 }
                 
-               
+                
                 
                 Button {
                     Task { try await viewModel.signInWithEmail(email: viewModel.email, password: viewModel.password)
                         if viewModel.isAuthenticated {
                             navigateToHome = true
                         }else {
-                            viewModel.errorMessage = "Please fix the errors before signing up."
+                            viewModel.errorMessage = "Please fix the errors before signing in."
                         }
                     }
                 } label: {
@@ -100,13 +100,13 @@ struct signInPage: View {
                 }
                 .padding(.trailing, 25)
                 NavigationLink(destination: HomePage(), isActive: $navigateToHome) {
-                                    EmptyView()
-                                }
+                    EmptyView()
+                }
             }
         }
     }
 }
-    
+
 
 
 #Preview {
