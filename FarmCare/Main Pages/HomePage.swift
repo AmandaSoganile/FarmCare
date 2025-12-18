@@ -174,4 +174,5 @@ struct HomePage: View {
 
 #Preview {
     HomePage()
+        .environmentObject(AuthViewModel())
 }
