@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct tabview: View {
+    @State private var showingSheet = false
     var body: some View {
         TabView {
             HomePage()
@@ -15,17 +16,23 @@ struct tabview: View {
                     Label("Home", systemImage: "house")
                 }
             
-            add_New_Animal()
+            Color.clear
                 .tabItem {
                     Label("Add", systemImage: "plus.app.fill")
                 }
+                .onAppear {
+                    showingSheet = true
+                }
+            
             
             animalCategories()
                 .tabItem {
                     Label("Animal", systemImage: "pawprint.fill")
                 }
-               
         }
+        .sheet(isPresented: $showingSheet) {
+                    add_New_Animal()
+                }
     }
 }
 

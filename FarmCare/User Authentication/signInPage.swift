@@ -16,14 +16,17 @@ struct signInPage: View {
     
     var body: some View {
         NavigationStack{
-            Text("Sign in")
+            
+            Image("FarmCare Transparent")
+                .resizable()
+                .frame(width: 200, height: 150)
+            Text("SIGN IN")
                 .font(.largeTitle)
-                .fontWeight(.bold)
+                .fontWeight(.heavy)
                 .padding()
             
-            
-            
-            //name textfield
+          
+      
             VStack{
                 VStack(alignment: .leading){
                     CustomTextField(title: "Email Address", text: $viewModel.email, placeholder: "Email")
@@ -73,7 +76,7 @@ struct signInPage: View {
                         
                         RoundedRectangle(cornerRadius: 40)
                             .frame(width: 366, height: 60)
-                            .foregroundStyle(Color.black.gradient)
+                            .foregroundStyle((Color(red: 7/255, green: 28/255, blue: 24/255)).gradient)
                         
                         Text("SIGN IN")
                             .font(.title2)
@@ -99,7 +102,7 @@ struct signInPage: View {
                     }
                 }
                 .padding(.trailing, 25)
-                NavigationLink(destination: HomePage(), isActive: $navigateToHome) {
+                NavigationLink(destination: tabview(), isActive: $navigateToHome) {
                     EmptyView()
                 }
             }

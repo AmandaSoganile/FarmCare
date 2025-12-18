@@ -9,24 +9,30 @@ import SwiftUI
 import SwiftData
 
 struct singleAnimalSpecies: View {
-@Query var animals: [Animal]
+    @Query var animals: [Animal]
     
     let category: animalCategory
     
     var body: some View {
         NavigationStack{
             ZStack{
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.green.opacity(0.6), Color.orange.opacity(0.05)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .edgesIgnoringSafeArea(.all)
                 VStack{
                     NavigationStack {
                         List(animals.filter { $0.species == category.species }) { animal in
                             NavigationLink{
                                 animalProfile(animal: animal)
                             } label: {
-                                singleAnimalRow(animal: animal) 
+                                singleAnimalRow(animal: animal)
                             }
                         }
                         .navigationTitle(category.name)
-                        
+                        .scrollContentBackground(.hidden)
                     }
                 }
                 

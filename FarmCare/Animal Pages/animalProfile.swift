@@ -152,7 +152,7 @@ struct animalProfile: View {
                         Label(isEditing ? "Done" : "Edit Notes", systemImage: isEditing ? "checkmark.circle.fill" : "square.and.pencil")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.black)
+                            .background(Color(red: 7/255, green: 28/255, blue: 24/255).gradient)
                             .foregroundColor(.white)
                             .cornerRadius(12)
                     }
