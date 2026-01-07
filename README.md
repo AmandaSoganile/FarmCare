@@ -7,7 +7,7 @@ FarmCare is an app designed to help farmers record animal vaccinations and feedi
 - FarmCare is a solution designed to modernize traditional livestock management
 - FarmCare allows farmers to track vaccinations and feeding schedules effortlessly
 - Users can easily add new livestock to their registry by specifying names, breeds, and critical health data
--  Users can access individual animal profiles to review comprehensive health histories
+- Users can access individual animal profiles to review comprehensive health histories
 - Compatible on macOS 26.0+ and iOS 26.0+
 - SwiftUI is used to create the app
 - Supabase is used for authentication
@@ -56,7 +56,7 @@ YourProject/
 │   ├──SingleAnimalRow.swift
 │   └── SingleAnimalSpecies.swift
 ├── Main Views/
-│   ├── CContentView.swift
+│   ├── ContentView.swift
 │   ├── HomePage.swift
 │   ├── Settings.swift
 │   ├── TabsView.swift
@@ -71,7 +71,7 @@ YourProject/
 │   ├── SignIn.swift
 │   └──SignUp.swift
 ├── Utilities/
-├── Constants.swift
+│   ├──Constants.swift
 │   └──Supabase.swift
 └── Resources/
     └── Assets.xcassets
