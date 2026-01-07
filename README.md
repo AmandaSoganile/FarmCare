@@ -4,7 +4,6 @@ FarmCare is an app designed to help farmers record animal vaccinations and feedi
 
 ## Description
 
-Provide a more detailed explanation of your project here. Include:
 - FarmCare is a solution designed to modernize traditional livestock management
 - FarmCare allows farmers to track vaccinations and feeding schedules effortlessly
 - Users can easily add new livestock to their registry by specifying names, breeds, and critical health data
