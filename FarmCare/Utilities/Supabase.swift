@@ -1,23 +1,24 @@
-//
-//  supabase.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 29/10/2025.
-//
-
 import Foundation
 import Supabase
 
 @MainActor
-class SupabaseManager {
+final class SupabaseManager {
     static let shared = SupabaseManager()
-    
-    let client: SupabaseClient
-    
+    let configuration: BackendConfiguration?
+    let client: SupabaseClient?
+    let configurationError: String?
+
     private init() {
-        self.client = SupabaseClient(
-            supabaseURL: Constants.supabaseURL,
-            supabaseKey: Constants.supabaseKey
-        )
+        do {
+            let configuration = try BackendConfiguration.load()
+            self.configuration = configuration
+            client = configuration.backend == .supabase
+                ? SupabaseClient(supabaseURL: configuration.url, supabaseKey: configuration.publicKey) : nil
+            configurationError = nil
+        } catch {
+            configuration = nil
+            client = nil
+            configurationError = error.localizedDescription
+        }
     }
 }

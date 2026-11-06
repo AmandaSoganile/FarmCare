@@ -1,0 +1,8 @@
+.env
+.env.*
+.venv
+.mail
+__pycache__
+.pytest_cache
+tests
+scripts

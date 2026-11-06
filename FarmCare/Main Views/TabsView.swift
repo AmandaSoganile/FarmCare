@@ -1,41 +1,35 @@
-//
-//  tabview.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 16/10/2025.
-//
-
 import SwiftUI
+import SwiftData
 
 struct TabsView: View {
-    @State private var showingSheet = false
+    private enum Tab: Hashable { case home, add, animals }
+    @State private var selection: Tab = .home
+    @State private var previousTab: Tab = .home
+    @State private var showingAddAnimal = false
+
     var body: some View {
-        TabView {
-            HomePage()
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }
-            
-            Color.clear
-                .tabItem {
-                    Label("Add", systemImage: "plus.app.fill")
-                }
-                .onAppear {
-                    showingSheet = true
-                }
-            
-            
-            AnimalCategories()
-                .tabItem {
-                    Label("Animal", systemImage: "pawprint.fill")
-                }
+        TabView(selection: $selection) {
+            HomePage().tag(Tab.home)
+                .tabItem { Label("Home", systemImage: "house") }
+            Color.clear.tag(Tab.add)
+                .tabItem { Label("Add", systemImage: "plus.circle") }
+            AnimalCategories().tag(Tab.animals)
+                .tabItem { Label("Animals", systemImage: "pawprint") }
         }
-        .sheet(isPresented: $showingSheet) {
-            AddNewAnimal()
+        .tint(FarmStyle.green)
+        .onChange(of: selection) { _, tab in
+            if tab == .add {
+                selection = previousTab
+                showingAddAnimal = true
+            } else {
+                previousTab = tab
+            }
         }
+        .sheet(isPresented: $showingAddAnimal) { AddNewAnimal() }
     }
 }
 
 #Preview {
-    TabsView()
+    TabsView().environmentObject(AuthViewModel()).environmentObject(AnimalSyncService())
+        .modelContainer(for: Animal.self, inMemory: true)
 }

@@ -1,0 +1,11 @@
+{
+  "name": "farmcare-database-validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test-database.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.15"
+  }
+}

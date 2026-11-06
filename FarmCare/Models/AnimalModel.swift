@@ -37,6 +37,18 @@ enum Species: String, CaseIterable, Codable {
 
 @Model
 class Animal {
+    @Attribute(.unique) var syncID: UUID = UUID()
+    var syncRevision: UUID = UUID()
+    var needsSync: Bool = true
+    var deletedAt: Date?
+    var serverRevision: Int64 = 0
+    var conflictSnapshot: Data?
+
+    func markChanged() {
+        syncRevision = UUID()
+        needsSync = true
+    }
+
     var name: String
     var species: Species
     var breed: String
@@ -66,17 +78,17 @@ class Animal {
     }
     
     var isVaccinationDueSoon: Bool {
-        let today = Date()
-        if let daysBetween = Calendar.current.dateComponents([.day], from: today, to: nextVaccinationDate).day {
-            return daysBetween <= 7 && daysBetween >= 0
-        }
-        return false
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let dueDay = calendar.startOfDay(for: nextVaccinationDate)
+        let days = calendar.dateComponents([.day], from: today, to: dueDay).day ?? -1
+        return (0...7).contains(days)
     }
-    
+
     var isVaccinationMissed: Bool {
-        nextVaccinationDate < Date()
+        Calendar.current.startOfDay(for: nextVaccinationDate) < Calendar.current.startOfDay(for: Date())
     }
-    
+
 }
 
 

@@ -1,129 +1,92 @@
-//
-//  sign_in page.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 15/10/2025.
-//
-
 import SwiftUI
 
 struct SignIn: View {
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var showPassword: Bool = false
-    @State private var navigateToHome : Bool = false
-    @StateObject private var viewModel = AuthViewModel()
-    @State private var showingAlert = false
-    
+    @EnvironmentObject private var viewModel: AuthViewModel
+    @State private var showPassword = false
+
     var body: some View {
-        NavigationStack{
-            
-            Image("FarmCare Transparent")
-                .resizable()
-                .frame(width: 200, height: 150)
-            Text("SIGN IN")
-                .font(.largeTitle)
-                .fontWeight(.heavy)
-                .padding()
-            
-          
-      
-            VStack{
-                VStack(alignment: .leading){
-                    CustomTextField(title: "Email Address", text: $viewModel.email, placeholder: "Email")
-                        .keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+        ScrollView {
+            VStack(spacing: 20) {
+                Image("FarmCare Transparent").resizable().scaledToFit().frame(height: 150)
+                VStack(spacing: 8) {
+                    Text("Welcome back").font(.system(.largeTitle, design: .rounded).bold())
+                    Text("Sign in to see your animals.").foregroundStyle(.secondary)
                 }
-                .padding()
-                
-                VStack(alignment: .leading){
-                    Text("Password")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    
-                    HStack {
-                        if showPassword {
-                            TextField("Password", text: $viewModel.password)
-                        } else {
-                            SecureField("Password", text: $viewModel.password)
-                        }
-                        Button(action: { showPassword.toggle() }) {
-                            Image(systemName: showPassword ? "eye.slash" : "eye")
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    .padding(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 40)
-                            .stroke(Color.black, lineWidth: 2)
-                    )
-                    .frame(width: 366, height: 50)
+                TextField("Email address", text: $viewModel.email)
+                    .keyboardType(.emailAddress).textContentType(.username)
+                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                HStack {
+                    if showPassword { TextField("Password", text: $viewModel.password) }
+                    else { SecureField("Password", text: $viewModel.password).textContentType(.password) }
+                    Button { showPassword.toggle() } label: {
+                        Image(systemName: showPassword ? "eye.slash" : "eye")
+                    }.accessibilityLabel(showPassword ? "Hide password" : "Show password")
                 }
-                
-                
-                
+                AuthMessages()
                 Button {
-                    Task { try await viewModel.signInWithEmail(email: viewModel.email, password: viewModel.password)
-                        if viewModel.isAuthenticated {
-                            navigateToHome = true
-                        }else {
-                            viewModel.errorMessage = "Please check that all details are correct"
-                            showingAlert = true
-                        }
-                    }
+                    Task { await viewModel.signInWithEmail(email: viewModel.email, password: viewModel.password) }
                 } label: {
-                    
-                    ZStack {
-                        
-                        RoundedRectangle(cornerRadius: 40)
-                            .frame(width: 366, height: 60)
-                            .foregroundStyle((Color(red: 7/255, green: 28/255, blue: 24/255)).gradient)
-                        
-                        Text("SIGN IN")
-                            .font(.title2)
-                            .fontDesign(.default)
-                            .fontWeight(.bold)
-                            .foregroundStyle(Color.white)
-                        
-                    }
+                    Text(viewModel.isLoading ? "Signing in…" : "Sign In").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.plain)
-                .padding(.top, 20)
-                .padding()
-                
-                HStack{
-                    Spacer()
-                    
-                    Text("Dont have an account?")
-                    
-                    NavigationLink{
-                        SignUp()
-                    } label: {
-                        Text("Sign Up")
-                    }
+                .buttonStyle(FarmPrimaryButtonStyle()).disabled(viewModel.isLoading)
+                if viewModel.usesCustomAPI {
+                    NavigationLink("Forgot password?") { AccountEmailView(recovery: true) }
+                    NavigationLink("Resend confirmation email") { AccountEmailView(recovery: false) }
                 }
-                .padding(.trailing, 25)
-                NavigationLink(destination: TabsView(), isActive: $navigateToHome) {
-                    EmptyView()
-                }
+                NavigationLink("Create an account") { SignUp() }
             }
+            .textFieldStyle(.roundedBorder)
+            .padding(24).frame(maxWidth: 480)
+            .frame(maxWidth: .infinity)
         }
-        .alert("Sign In Error", isPresented: $showingAlert) {
-                    
-                    Button("OK", role: .cancel) {
-                        print("Alert dismissed")
-                    }
-                } message: {
-                    // Add an optional message with more details
-                    Text(viewModel.errorMessage ?? "Please check your details")
-                }
+        .background(FarmStyle.background)
+        .navigationTitle("Sign In").navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.interactively)
+        .onAppear { viewModel.errorMessage = nil }
     }
 }
 
+struct AccountEmailView: View {
+    @EnvironmentObject private var viewModel: AuthViewModel
+    let recovery: Bool
 
-
-#Preview {
-    SignIn()
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text(recovery ? "Reset your password" : "Confirm your email")
+                .font(.system(.title, design: .rounded).bold())
+            Text(recovery
+                 ? "Enter your account email. Open the email link to choose a new password, then return here to sign in."
+                 : "Enter your account email to request another confirmation link.")
+                .foregroundStyle(.secondary)
+            TextField("Email address", text: $viewModel.email)
+                .keyboardType(.emailAddress).textContentType(.emailAddress)
+                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                .textFieldStyle(.roundedBorder)
+            AuthMessages()
+            Button {
+                Task { await viewModel.sendAccountEmail(recovery: recovery) }
+            } label: {
+                Text(viewModel.isLoading ? "Sending…" : "Send email").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(FarmPrimaryButtonStyle()).disabled(viewModel.isLoading)
+            Spacer()
+        }
+        .padding(24).frame(maxWidth: 480).frame(maxWidth: .infinity)
+        .background(FarmStyle.background)
+        .navigationTitle(recovery ? "Password recovery" : "Email confirmation")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { viewModel.errorMessage = nil; viewModel.informationMessage = nil }
+    }
 }
 
+struct AuthMessages: View {
+    @EnvironmentObject private var viewModel: AuthViewModel
+    var body: some View {
+        if let error = viewModel.errorMessage {
+            Text(error).foregroundStyle(.red).accessibilityLabel("Error: \(error)")
+        }
+        if let message = viewModel.informationMessage {
+            Text(message).foregroundStyle(.secondary)
+        }
+    }
+}

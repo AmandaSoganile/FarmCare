@@ -1,0 +1,14 @@
+# Local configuration and generated files
+.DS_Store
+FarmCare/Secrets.xcconfig
+**/xcuserdata/
+DerivedData/
+.build/
+node_modules/
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+.mail/

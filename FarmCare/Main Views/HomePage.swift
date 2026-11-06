@@ -1,188 +1,106 @@
-//
-//  WelcomePage.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 15/10/2025.
-//
-
 import SwiftUI
 import SwiftData
 
 struct HomePage: View {
-    @Query var animals: [Animal]
-    
-    var animalTotals: [SummaryCard] {
-        Species.allCases.map { species in
-            SummaryCard(
-                name: species.rawValue.capitalized + "s",
-                total: animals.filter { $0.species == species }.count
-            )
-        }
+    @Query(filter: #Predicate<Animal> { $0.deletedAt == nil }) private var animals: [Animal]
+    @State private var showingAddAnimal = false
+
+    private var upcoming: [Animal] {
+        animals.filter(\.isVaccinationDueSoon).sorted { $0.nextVaccinationDate < $1.nextVaccinationDate }
     }
-    
-    var upcomingVaccinations: [Animal] {
-        animals.filter { $0.isVaccinationDueSoon }
+    private var overdue: [Animal] {
+        animals.filter(\.isVaccinationMissed).sorted { $0.nextVaccinationDate < $1.nextVaccinationDate }
     }
-    
-    var missedVaccinations: [Animal] {
-        animals.filter { $0.isVaccinationMissed }
-    }
-    
+
     var body: some View {
-        ZStack{
-            Color.green.opacity(0.025)
-                .ignoresSafeArea()
-            
-            NavigationStack{
-                
-                HStack {
-                    
-                    Image("FarmCare Transparent")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 65, height: 65)
-                    
-                    Spacer()
-                    
-                    Text("FarmCare")
-                        .font(.largeTitle.bold())
-                        .fontDesign(.rounded)
-                    
-                    Spacer()
-                    
-                    NavigationLink(destination: Settings()) {
-                        Image(systemName: "gearshape.fill")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .tint(Color.black)
-                        
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    HStack(spacing: 12) {
+                        Image("FarmCare Transparent").resizable().scaledToFit().frame(width: 54, height: 54)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Your farm at a glance").font(.title2.bold())
+                            Text("Animals, care and upcoming vaccinations.").font(.subheadline).foregroundStyle(.secondary)
+                        }
                     }
+                    NavigationLink { AnimalCategories() } label: {
+                        FarmCard {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("Total animals").font(.subheadline).foregroundStyle(.secondary)
+                                    Text(animals.count, format: .number).font(.system(.largeTitle, design: .rounded).bold())
+                                }
+                                Spacer()
+                                Image(systemName: "pawprint.fill").font(.title).foregroundStyle(FarmStyle.green)
+                                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }.buttonStyle(.plain)
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 95), spacing: 12)], spacing: 12) {
+                        ForEach(categories) { category in
+                            NavigationLink { SingleAnimalSpecies(category: category) } label: {
+                                FarmCard {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(category.name).font(.caption).foregroundStyle(.secondary)
+                                        Text(animals.filter { $0.species == category.species }.count, format: .number)
+                                            .font(.system(.title2, design: .rounded).bold())
+                                    }
+                                }
+                            }.buttonStyle(.plain)
+                        }
+                    }
+                    if animals.isEmpty {
+                        FarmCard {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Label("Welcome to your farm", systemImage: "leaf").font(.headline)
+                                Text("Add your first animal to see care schedules here.").foregroundStyle(.secondary)
+                                Button("Add an animal") { showingAddAnimal = true }.buttonStyle(FarmPrimaryButtonStyle())
+                            }
+                        }
+                    }
+                    vaccinationSection("Overdue vaccinations", animals: overdue, isMissed: true,
+                                       emptyMessage: "No overdue vaccinations.")
+                    vaccinationSection("Upcoming vaccinations", animals: upcoming, isMissed: false,
+                                       emptyMessage: "Nothing due in the next 7 days.")
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.green.opacity(0.7))
-                
-                
-                
-                ScrollView{
-                    VStack(spacing: 16) {
-                        ZStack{
-                            RoundedRectangle(cornerRadius: 20)
-                                .frame(width:366, height: 120)
-                                .foregroundStyle(Color(.green).opacity(0.25))
-                                .foregroundStyle(.ultraThinMaterial)
-                                .shadow(radius: 1)
-                                
-                            NavigationLink{
-                                AnimalCategories()
-                            } label: {
-                                HStack{
-                                    VStack {
-                                        Text("Total animals")
-                                            .font(.system(size: 20, weight: .bold, design: .default))
-                                        
-                                        Text("\(animals.count)")
-                                            .font(.title3)
-                                            .fontWeight(.bold)
-                                    }
-                                    .padding(.horizontal, 60)
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
-                                ForEach(animalTotals, id: \.name) { card in
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 18)
-                                            .frame(width: 140, height: 80)
-                                            .foregroundStyle(Color(.green).opacity(0.25))
-                                            .foregroundStyle(.ultraThinMaterial)
-                                            .shadow(radius: 1)
-                                        
-                                        VStack {
-                                            Text(card.name)
-                                                .font(.headline)
-                                                .fontWeight(.bold)
-                                                .lineLimit(1)
-                                                .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                                            Text("\(card.total)")
-                                                .font(.title)
-                                                .fontWeight(.bold)
-                                                .lineLimit(1)
-                                                .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                        .padding(Edge.Set.all, 20)
-                        
-                        Divider()
-                            .padding(.leading)
-                        
-                        
-                        
-                        Text("Vaccinations")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .fontDesign(.rounded)
-                            .lineLimit(1)
-                            .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                        
-                        VStack(alignment: .leading){
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Upcoming Vaccinations")
-                                    .font(.title)
-                                    .fontWeight(.semibold)
-                                    .lineLimit(1)
-                                    .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                                
-                                if upcomingVaccinations.isEmpty {
-                                    Text("No upcoming vaccinations")
-                                        .foregroundColor(.gray)
-                                } else {
-                                    ForEach(upcomingVaccinations) { animal in
-                                        VaccinationRow(animal: animal, isMissed: false)
-                                    }
-                                }
-                            }
-                            .padding()
-                            
-                            Divider()
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Missed Vaccinations")
-                                    .font(.title)
-                                    .fontWeight(.semibold)
-                                    .lineLimit(1)
-                                    .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                                
-                                if missedVaccinations.isEmpty {
-                                    Text("No missed vaccinations ")
-                                        .foregroundColor(.gray)
-                                } else {
-                                    ForEach(missedVaccinations) { animal in
-                                        VaccinationRow(animal: animal, isMissed: true)
-                                    }
-                                }
-                            }
-                            .padding()
-                        }
-                        .padding()
-                    }
-                    .padding(.bottom)
+                .padding(20).frame(maxWidth: 760).frame(maxWidth: .infinity)
+            }
+            .background(FarmStyle.background)
+            .navigationTitle("FarmCare")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink { Settings() } label: { Image(systemName: "gearshape") }
+                        .accessibilityLabel("Settings")
                 }
             }
-            .navigationBarBackButtonHidden(true)
+            .sheet(isPresented: $showingAddAnimal) { AddNewAnimal() }
+        }
+    }
+
+    private func vaccinationSection(_ title: String, animals: [Animal], isMissed: Bool, emptyMessage: String) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(title).font(.headline)
+                Spacer()
+                Text(animals.count, format: .number).font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+            }
+            if animals.isEmpty {
+                FarmCard {
+                    Label(emptyMessage, systemImage: "checkmark.circle")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                }
+            } else {
+                ForEach(animals) { animal in
+                    NavigationLink { AnimalProfile(animal: animal) } label: {
+                        VaccinationRow(animal: animal, isMissed: isMissed)
+                    }.buttonStyle(.plain)
+                }
+            }
         }
     }
 }
 
-
 #Preview {
-    HomePage()
-        .environmentObject(AuthViewModel())
+    HomePage().environmentObject(AuthViewModel()).environmentObject(AnimalSyncService())
+        .modelContainer(for: Animal.self, inMemory: true)
 }

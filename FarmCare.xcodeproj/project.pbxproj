@@ -24,6 +24,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Secrets.xcconfig,
+				Secrets.xcconfig.example,
 			);
 			target = 4DE6A40D2E9FAA8F007377DA /* FarmCare */;
 		};

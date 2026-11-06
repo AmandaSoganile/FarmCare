@@ -1,0 +1,51 @@
+name: farmcare-local
+services:
+  db:
+    restart: unless-stopped
+    image: postgres:17
+    environment:
+      POSTGRES_USER: farmcare
+      POSTGRES_PASSWORD: ${FARMCARE_DB_PASSWORD:?Run python3 scripts/init_local.py first}
+      POSTGRES_DB: farmcare
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: ["farmcare_database:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U farmcare -d farmcare"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  mail:
+    restart: unless-stopped
+    image: axllent/mailpit:v1.27
+    ports: ["127.0.0.1:8025:8025"]
+  api:
+    restart: unless-stopped
+    build: .
+    image: farmcare-api:local
+    environment: &api_environment
+      FARMCARE_ENV: development
+      FARMCARE_DATABASE_URL: postgresql+psycopg://farmcare:${FARMCARE_DB_PASSWORD}@db:5432/farmcare
+      FARMCARE_SIGNING_KEY: ${FARMCARE_SIGNING_KEY:?Run python3 scripts/init_local.py first}
+      FARMCARE_PUBLIC_URL: ${FARMCARE_PUBLIC_URL:-http://localhost:8000}
+      FARMCARE_SMTP_HOST: mail
+      FARMCARE_SMTP_PORT: 1025
+    ports: ["127.0.0.1:8000:8000"]
+    command: ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 --no-proxy-headers --no-access-log"]
+    depends_on:
+      db: {condition: service_healthy}
+      mail: {condition: service_started}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  worker:
+    restart: unless-stopped
+    build: .
+    image: farmcare-api:local
+    environment: *api_environment
+    command: ["python", "-m", "app.mail"]
+    depends_on:
+      api: {condition: service_healthy}
+volumes:
+  farmcare_database:

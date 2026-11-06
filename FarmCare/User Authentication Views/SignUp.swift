@@ -1,186 +1,46 @@
-//
-//  sign up page.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 15/10/2025.
-//
-
-
 import SwiftUI
 
 struct SignUp: View {
-    @State private var confirmPassword: String = ""
-    @State private var showPassword: Bool = false
-    @State private var showConfirmPassword: Bool = false
-    
-    @State private var navigateToHome = false
-    
-    @EnvironmentObject var viewModel: AuthViewModel
-    
-    var body: some View {
-        NavigationStack {
-            VStack {
-                
-                Image("FarmCare Transparent")
-                    .resizable()
-                    .frame(width: 200, height: 150)
-                
-                Text("Create your Account")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding()
-                
-                VStack(spacing: 16) {
-                    
-                    // Name
-                    CustomTextField(
-                        title: "Name",
-                        text: $viewModel.name,
-                        placeholder: "Name"
-                    )
-                    
-                    // Email
-                    CustomTextField(
-                        title: "Email",
-                        text: $viewModel.email,
-                        placeholder: "Email"
-                    )
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
-                    
-                    // Password
-                    VStack(alignment: .leading) {
-                        Text("Password")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                        
-                        HStack {
-                            if showPassword {
-                                TextField("Password", text: $viewModel.password)
-                            } else {
-                                SecureField("Password", text: $viewModel.password)
-                            }
-                            
-                            Button {
-                                showPassword.toggle()
-                            } label: {
-                                Image(systemName: showPassword ? "eye.slash" : "eye")
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .padding(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 40)
-                                .stroke(Color.black, lineWidth: 2)
-                        )
-                        .frame(height: 50)
-                    }
-                    
-                    // Password strength
-                    Text(
-                        viewModel.password.count < 8
-                        ? "Password must be at least 8 characters"
-                        : "Strong password"
-                    )
-                    .foregroundColor(
-                        viewModel.password.count < 8 ? .red : .green
-                    )
-                    .font(.footnote)
-                    
-                    // Confirm Password
-                    VStack(alignment: .leading) {
-                        Text("Confirm Password")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                        
-                        HStack {
-                            if showConfirmPassword {
-                                TextField("Confirm Password", text: $confirmPassword)
-                            } else {
-                                SecureField("Confirm Password", text: $confirmPassword)
-                            }
-                            
-                            Button {
-                                showConfirmPassword.toggle()
-                            } label: {
-                                Image(systemName: showConfirmPassword ? "eye.slash" : "eye")
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .padding(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 40)
-                                .stroke(Color.black, lineWidth: 2)
-                        )
-                        .frame(height: 50)
-                        
-                        if confirmPassword != viewModel.password && !confirmPassword.isEmpty {
-                            Text("Passwords do not match")
-                                .foregroundColor(.red)
-                                .font(.footnote)
-                        }
-                    }
-                }
-                .padding()
-                
-                
-                Button {
-                    Task {
-                        guard confirmPassword == viewModel.password else {
-                            viewModel.errorMessage = "Passwords do not match"
-                            return
-                        }
+    @EnvironmentObject private var viewModel: AuthViewModel
+    @State private var confirmPassword = ""
 
-                        do {
-                            try await viewModel.signUpWithEmail(
-                                name: viewModel.name,
-                                email: viewModel.email,
-                                password: viewModel.password
-                            )
-                        } catch {
-                            viewModel.errorMessage = error.localizedDescription
-                        }
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Image("FarmCare Transparent").resizable().scaledToFit().frame(height: 150)
+                VStack(spacing: 8) {
+                    Text("Create your account").font(.system(.title, design: .rounded).bold())
+                    Text("A little less paperwork. More time on the farm.").foregroundStyle(.secondary)
+                }.multilineTextAlignment(.center)
+                TextField("Name", text: $viewModel.name).textContentType(.name)
+                TextField("Email address", text: $viewModel.email)
+                    .keyboardType(.emailAddress).textContentType(.username)
+                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                SecureField("Password (at least 8 characters)", text: $viewModel.password).textContentType(.newPassword)
+                SecureField("Confirm password", text: $confirmPassword).textContentType(.newPassword)
+                AuthMessages()
+                Button {
+                    guard confirmPassword == viewModel.password else {
+                        viewModel.errorMessage = "Passwords do not match."
+                        return
+                    }
+                    Task {
+                        await viewModel.signUpWithEmail(name: viewModel.name, email: viewModel.email, password: viewModel.password)
+                        if viewModel.errorMessage == nil { confirmPassword = "" }
                     }
                 } label: {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 40)
-                            .frame(height: 60)
-                            .foregroundStyle((Color(red: 7/255, green: 28/255, blue: 24/255)).gradient)
-
-                        Text("SIGN UP")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                    }
+                    Text(viewModel.isLoading ? "Creating account…" : "Sign Up").frame(maxWidth: .infinity)
                 }
-                .padding()
-                
-                
-                HStack {
-                    Text("Already have an account?")
-                    NavigationLink("Sign In") {
-                        SignIn()
-                    }
-                }
-                .padding(.bottom, 20)
-                
-                Spacer()
+                .buttonStyle(FarmPrimaryButtonStyle()).disabled(viewModel.isLoading)
+                Text("Already registered? Go back to Sign In.").font(.footnote).foregroundStyle(.secondary)
             }
-            .onChange(of: viewModel.isAuthenticated) {
-                    if viewModel.isAuthenticated {
-                        navigateToHome = true
-                    }
-                }
-            .navigationDestination(isPresented: $navigateToHome) {
-                TabsView()
-            }
+            .textFieldStyle(.roundedBorder)
+            .padding(24).frame(maxWidth: 480)
+            .frame(maxWidth: .infinity)
         }
+        .background(FarmStyle.background)
+        .navigationTitle("Sign Up").navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.interactively)
+        .onAppear { viewModel.errorMessage = nil; viewModel.informationMessage = nil }
     }
-}
-
-
-
-#Preview {
-    SignUp()
-        .environmentObject(AuthViewModel())
 }

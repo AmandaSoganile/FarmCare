@@ -1,101 +1,50 @@
-//
-//  animalCategories.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 17/10/2025.
-//
-
 import SwiftUI
-
+import SwiftData
 
 struct AnimalCategories: View {
+    @Query(filter: #Predicate<Animal> { $0.deletedAt == nil }) private var animals: [Animal]
+    @State private var showingAddAnimal = false
+
     var body: some View {
         NavigationStack {
-            ZStack{
-                LinearGradient(
-                    gradient: Gradient(colors: [Color.green.opacity(0.6), Color.orange.opacity(0.05)]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .edgesIgnoringSafeArea(.all)
-                ScrollView {
-                    VStack(spacing: 17) {
-                        Text("Animal Species")
-                            .font(.largeTitle)
-                            .fontWeight(.heavy)
-                            .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                        
-                        ForEach(categories) { category in
-                            NavigationLink(destination: SingleAnimalSpecies(category: category)) {
-                                
-                                HStack(spacing: 29){
-                                    Image(category.species.imageResource)
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                    
-                                    Text(category.name)
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(Color.black)
-                                    
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Browse your livestock by species.").foregroundStyle(.secondary)
+                    ForEach(categories) { category in
+                        NavigationLink { SingleAnimalSpecies(category: category) } label: {
+                            FarmCard {
+                                HStack(spacing: 18) {
+                                    Image(category.species.imageResource).resizable().scaledToFit()
+                                        .frame(width: 58, height: 58)
+                                        .padding(10)
+                                        .background(FarmStyle.green.opacity(0.07), in: RoundedRectangle(cornerRadius: 16))
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(category.name).font(.title3.bold())
+                                        let count = animals.filter { $0.species == category.species }.count
+                                        Text("\(count) \(count == 1 ? "animal" : "animals")").font(.subheadline).foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right").font(.subheadline).foregroundStyle(.secondary)
                                 }
-                                
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 28)
-                                        .fill(Color.white)
-                                        .frame(height: 200)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 28)
-                                                .stroke(Color.white, lineWidth: 2)
-                                        )
-                                        .shadow(radius: 5)
-                                )
-                                .frame(height: 200)
-                                .padding(.horizontal)
                             }
-                        }
+                        }.buttonStyle(.plain)
                     }
-                    .padding(.top)
                 }
-                
-                VStack{
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Spacer()
-                        
-                        NavigationLink{
-                            AddNewAnimal()
-                        } label: {
-                            
-                            ZStack {
-                                Circle()
-                                    .frame(width: 60)
-                                    .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255))
-                                    .shadow(radius: 12)
-                                
-                                Image(systemName: "plus")
-                                    .resizable()
-                                    .foregroundStyle(Color.white)
-                                    .frame(width: 25, height: 25)
-                            }
-                        }
-                    }
-                    .padding()
+                .padding(20).frame(maxWidth: 760).frame(maxWidth: .infinity)
+            }
+            .background(FarmStyle.background)
+            .navigationTitle("Animals")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showingAddAnimal = true } label: { Image(systemName: "plus") }
+                        .accessibilityLabel("Add animal")
                 }
             }
+            .sheet(isPresented: $showingAddAnimal) { AddNewAnimal() }
         }
     }
 }
 
-
-
-
 #Preview {
-    NavigationStack {
-        AnimalCategories()
-    }
+    AnimalCategories().environmentObject(AnimalSyncService()).modelContainer(for: Animal.self, inMemory: true)
 }

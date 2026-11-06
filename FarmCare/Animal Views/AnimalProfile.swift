@@ -1,204 +1,113 @@
-//
-//  animal profile.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 15/10/2025.
-//
-
 import SwiftUI
 import SwiftData
 
 struct AnimalProfile: View {
+    @EnvironmentObject private var sync: AnimalSyncService
     @Environment(\.modelContext) private var context
     @Bindable var animal: Animal
-    @State private var isEditing: Bool = false
-    
-    
+    @State private var isEditing = false
     @State private var showDetails = false
-    @State private var notes: String = ""
-    @State private var healthStatus: HealthStatus = .healthy
-    
+    @State private var notes = ""
+    @State private var saveError: String?
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                
-                //Animal name and health status
-                HStack(alignment: .center) {
-                    Image(animal.species.imageResource)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(.green)
-                        .padding(.trailing, 8)
-                    VStack(alignment: .leading) {
-                        Text(animal.name)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        Text(animal.species.speciesDisplayName)
-                            .foregroundColor(.gray)
-                    }
-                    Spacer()
-                    Circle()
-                        .fill(healthStatus.color)
-                        .frame(width: 20, height: 20)
-                }
-                .padding(.horizontal)
-                .padding(.top, 20)
-                .padding(.bottom, 5)
-                
-                Divider()
-                
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Quick Health Summary")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                    
-                    //Health summary
-                    HStack {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Label("Feed: \(animal.feedType)", systemImage: "leaf.fill")
-                            Label("Every \(animal.feedSchedule) hrs", systemImage: "clock")
+                FarmCard {
+                    HStack(alignment: .top, spacing: 18) {
+                        Image(animal.species.imageResource).resizable().scaledToFit()
+                            .frame(width: 68, height: 68)
+                            .padding(10)
+                            .background(FarmStyle.green.opacity(0.08), in: RoundedRectangle(cornerRadius: 18))
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(animal.name).font(.system(.title, design: .rounded).bold())
+                            Text("\(animal.species.rawValue) · \(animal.breed)").font(.subheadline).foregroundStyle(.secondary)
+                            AnimalScheduleBadge(animal: animal)
                         }
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .leading, spacing: 10) {
-                            Label("Vaccination: \(animal.vaccinationType)", systemImage: "bandage.fill")
-                            Label("Every \(animal.vaccinationFrequency.description)", systemImage: "calendar")
-                        }
+                        Spacer(minLength: 0)
                     }
                 }
-                .padding()
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(16)
-                .padding(.horizontal)
-                
-                
-                DisclosureGroup(isExpanded: $showDetails) {
-                    
-                    
-                    //Full details
-                    VStack(alignment: .leading, spacing: 10) {
-                        
-                        Text("Name: \(animal.name)")
-                        Text("Species: \(animal.species.speciesDisplayName)")
-                        Text("Breed: \(animal.breed)")
-                        Text("Feed Type: \(animal.feedType)")
-                        Text("Feed Schedule: \(animal.feedSchedule) hours")
-                        Text("Vaccination Type: \(animal.vaccinationType)")
-                        Text("Vaccination Frequency: \(animal.vaccinationFrequency.description)")
-                        Text("Last vaccination:  \(animal.lastVaccinationDate, style: .date)")
-                        Text("Next vaccination: \(animal.nextVaccinationDate, style: .date)")
+                FarmCard {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Care schedule").font(.headline)
+                        Label("\(animal.feedType) · every \(animal.feedSchedule) hours", systemImage: "leaf")
+                        Divider()
+                        Label(animal.vaccinationType, systemImage: "calendar")
+                        LabeledContent("Next vaccination") {
+                            Text(animal.nextVaccinationDate, format: .dateTime.day().month().year())
+                        }.font(.subheadline)
                     }
-                    
-                    .padding(.top, 8)
-                    .font(.system(size: 20, weight: .medium, design: .default))
-                    
-                } label: {
-                    
-                    Text("View Full Details")
-                        .font(.headline)
                 }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(16)
-                .padding(.horizontal)
-                
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Notes")
-                        .font(.headline)
-                    
-                    if isEditing {
-                        TextEditor(text: $notes)
-                            .frame(height: 120)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(12)
-                            .onChange(of: notes) { _ in
-                                
-                                animal.notes = notes
-                                do {
-                                    try context.save()
-                                } catch {
-                                    // Handle save error appropriately in production
-                                    print("Failed to save notes")
-                                }
+                FarmCard {
+                    DisclosureGroup("Animal details", isExpanded: $showDetails) {
+                        VStack(spacing: 12) {
+                            LabeledContent("Species", value: animal.species.rawValue)
+                            LabeledContent("Breed", value: animal.breed)
+                            LabeledContent("Weight", value: "\(animal.weight) kg")
+                            LabeledContent("Vaccination interval", value: animal.vaccinationFrequency.description)
+                            LabeledContent("Last vaccination") {
+                                Text(animal.lastVaccinationDate, format: .dateTime.day().month().year())
                             }
-                    } else {
-                        if animal.notes.isEmpty {
-                            Text("No Notes Yet")
-                                .foregroundColor(.secondary)
+                        }.font(.subheadline).padding(.top, 16)
+                    }.font(.headline)
+                }
+                FarmCard {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Notes").font(.headline)
+                        if isEditing {
+                            TextEditor(text: $notes)
+                                .frame(minHeight: 140)
+                                .scrollContentBackground(.hidden)
+                                .padding(8)
+                                .background(FarmStyle.background, in: RoundedRectangle(cornerRadius: 12))
+                                .accessibilityLabel("Animal notes")
                         } else {
-                            Text(animal.notes)
+                            Text(animal.notes.isEmpty ? "Record observations and care notes here." : animal.notes)
+                                .foregroundStyle(animal.notes.isEmpty ? Color.secondary : Color.primary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                    }
-                    Button(action: {
+                        Button(action: editOrSave) {
+                            Label(isEditing ? "Save notes" : "Edit notes", systemImage: isEditing ? "checkmark" : "square.and.pencil")
+                        }.buttonStyle(FarmPrimaryButtonStyle())
                         if isEditing {
-                            
-                            animal.notes = notes
-                            do {
-                                try context.save()
-                            } catch {
-                                print("Failed to save notes: \(error)")
-                            }
-                        } else {
-                            
-                            notes = animal.notes
+                            Button("Cancel editing", role: .cancel) { isEditing = false }
+                                .frame(maxWidth: .infinity)
                         }
-                        isEditing.toggle()
-                    }) {
-                        Label(isEditing ? "Done" : "Edit Notes", systemImage: isEditing ? "checkmark.circle.fill" : "square.and.pencil")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(red: 7/255, green: 28/255, blue: 24/255).gradient)
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
                     }
                 }
-                .padding(.horizontal)
             }
-            .padding(.vertical)
+            .padding(20).frame(maxWidth: 760).frame(maxWidth: .infinity)
         }
+        .background(FarmStyle.background)
         .navigationTitle("Animal Profile")
-        .onAppear {
-            
-            healthStatus = determineHealthStatus()
-        }
+        .navigationBarTitleDisplayMode(.inline)
+        .scrollDismissesKeyboard(.interactively)
+        .alert("Could not save notes", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })) {
+            Button("OK") { saveError = nil }
+        } message: { Text(saveError ?? "Please retry.") }
     }
-    
-    
-    func saveNotes() {
-        print("Notes saved: \(notes)")
-    }
-    
-    
-    func determineHealthStatus() -> HealthStatus {
-        
-        if animal.vaccinationFrequency.rawValue <= 2 {
-            return .healthy
-        } else if animal.vaccinationFrequency.rawValue < 3 {
-            return .monitor
+
+    private func editOrSave() {
+        if isEditing {
+            animal.notes = notes
+            animal.markChanged()
+            do {
+                try context.save()
+                sync.requestSync()
+                isEditing = false
+            } catch {
+                context.rollback()
+                saveError = error.localizedDescription
+            }
         } else {
-            return .needsAttention
+            notes = animal.notes
+            isEditing = true
         }
     }
 }
 
-
 #Preview {
-    let previewAnimal = Animal(
-        name: "Bessie",
-        species: .cow,
-        breed: "Holstein",
-        weight: 345,
-        feedType: "Hay",
-        feedSchedule: 6,
-        vaccinationType: "Rabies",
-        vaccinationFrequency: .sixWeeks,
-        lastVaccinationDate: Calendar.current.date(byAdding: .day, value: -5, to: Date())!,
-        notes: "Lively and eating well."
-    )
-    AnimalProfile(animal: previewAnimal)
+    NavigationStack { AnimalProfile(animal: sampleAnimal) }
+        .environmentObject(AnimalSyncService())
+        .modelContainer(for: Animal.self, inMemory: true)
 }

@@ -1,263 +1,101 @@
-//
-//  add New Animal.swift
-//  FarmCare
-//
-//  Created by Amanda Soganile on 15/10/2025.
-//
-
 import SwiftUI
 import SwiftData
 
 struct AddNewAnimal: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    
-    @State private var selectedOption = Species.cow
-    let options = [Species.cow, Species.pig, Species.chicken]
-    
-    @State private var selectedWeight = 1
-    let weightOptions = Array(40...1000)
-    
-    @State private var selectedFeed = 1
-    let feedOptions = [1, 2, 3, 4, 6, 8, 10, 12, 24]
-    
-    @State private var selectedVaccination = 1
-    @State private var selectedVaccinationFrequency: VaccinationInterval = .sixWeeks
-    @State private var selectedVaccinationDate: Date = Date()
-    
-    
+    @EnvironmentObject private var sync: AnimalSyncService
+    @State private var selectedSpecies: Species
     @State private var name = ""
     @State private var breed = ""
+    @State private var weight = ""
     @State private var feedType = ""
+    @State private var feedHours = 6
     @State private var vaccinationType = ""
-    
-    @State private var feedingSchedule: Int = 1
-    @State private var vaccinationSchedule: Int = 1
-    
-    
-    
+    @State private var vaccinationFrequency: VaccinationInterval = .sixWeeks
+    @State private var vaccinationDate = Date()
+    @State private var saveError: String?
+
+    init(initialSpecies: Species = .cow) {
+        _selectedSpecies = State(initialValue: initialSpecies)
+    }
+
+    private var validWeight: Int? {
+        guard let value = Int(weight.trimmingCharacters(in: .whitespacesAndNewlines)), value > 0 else { return nil }
+        return value
+    }
+    private var canSave: Bool {
+        [name, breed, feedType, vaccinationType].allSatisfy { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty } && validWeight != nil
+    }
+
     var body: some View {
-        NavigationStack{
-            ZStack{
-                LinearGradient(
-                    gradient: Gradient(colors: [Color.green.opacity(0.5), Color.orange.opacity(0.1)]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .edgesIgnoringSafeArea(.all)
-                
-                VStack{
-                    HStack{
-                        Text("Add New Animal")
-                            .font(.largeTitle)
-                            .fontWeight(.heavy)
-                            .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255).gradient)
+        NavigationStack {
+            Form {
+                Section(header: Label("Animal details", systemImage: "pawprint"),
+                        footer: Text("Enter the animal’s current weight in whole kilograms.")) {
+                    Picker("Species", selection: $selectedSpecies) {
+                        ForEach(Species.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                     }
-                    .frame(maxWidth: .infinity)
-                    .ignoresSafeArea()
-                    .padding()
-                    //                .background(Color.green.opacity(0.5))
-                    
-                    //Choose a species
-                    ScrollView{
-                        HStack(spacing: 60){
-                            Text("Species")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                            
-                            Picker("Choose a species", selection: $selectedOption){
-                                ForEach(options, id: \.self){ option in
-                                    Text(option.rawValue).tag(option)
-                                }
-                            }
-                            
-                            .pickerStyle(.segmented)
-                            .padding()
-                        }
-                        .padding()
-                        
-                        // Animal name text field
-                        VStack(alignment: .leading){
-                            Text("Name")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                            TextField("Enter Animal Name eg. Tom", text: $name)
-                                .padding(10)
-                                .overlay(RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 2)
-                                    .shadow(radius: 20))
-                                .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.white))
-                        }
-                        .padding()
-                        
-                        //Breed textfield
-                        VStack(alignment: .leading){
-                            Text("Breed")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                            TextField("Enter breed of animal eg.Holstein", text: $breed)
-                                .padding(10)
-                                .overlay(RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 2)
-                                    .shadow(radius: 20))
-                                .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.white))
-                        }
-                        .padding()
-                        
-                        //Weight picker
-                        VStack{
-                            HStack(spacing: 60){
-                                Text("Weight")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .padding(18)
-                                Picker("Choose weight", selection: $selectedWeight) {
-                                    ForEach(weightOptions, id: \.self) { value in
-                                        Text("\(value) kg").tag(value)
-                                    }
-                                }
-                                .frame(height: 85)
-                                .padding()
-                                .pickerStyle(.inline)
-                                .paletteSelectionEffect(.custom)
-                            }
-                            
-                            
-                            //feed type text field
-                            VStack(alignment: .leading){
-                                Text("Feed Type")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                TextField("Enter name of feed eg. Hay", text: $feedType)
-                                    .padding(10)
-                                    .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.black, lineWidth: 2)
-                                        .shadow(radius: 20))
-                                    .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.white))
-                            }
-                            .padding()
-                            
-                            //feed schedule picker
-                            HStack(spacing: 60){
-                                Text("Feed Schedule")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .padding(18)
-                                Picker("Choose weight", selection: $selectedFeed) {
-                                    ForEach(feedOptions, id: \.self) { value in
-                                        Text("\(value) hr(s)").tag(value)
-                                    }
-                                }
-                                .frame(height: 85)
-                                .padding()
-                                .pickerStyle(.inline)
-                                
-                                
-                            }
-                            
-                            
-                            //vaccination type text field
-                            VStack(alignment: .leading){
-                                Text("Vaccination Type")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                TextField("Enter name of vaccination eg. Rabies", text: $vaccinationType)
-                                    .padding(10)
-                                    .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.black, lineWidth: 2)
-                                        .shadow(radius: 20))
-                                    .background(RoundedRectangle(cornerRadius: 10).foregroundStyle(.white))
-                            }
-                            .padding()
-                            
-                            
-                            //last vaccination date picker
-                            HStack(spacing: 60) {
-                                Text("Last Vaccination Date")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                
-                                DatePicker("Select date", selection: $selectedVaccinationDate, displayedComponents: .date)
-                                    .datePickerStyle(.compact)
-                                    .labelsHidden()
-                                    .padding(.leading, 10)
-                            }
-                            .padding()
-                            
-                            
-                            //vaccination frequency picker
-                            HStack(spacing: 60) {
-                                Text("Vaccination Frequency")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .padding(18)
-                                
-                                Picker("Select frequency", selection: $selectedVaccinationFrequency) {
-                                    ForEach(VaccinationInterval.allCases, id: \.self) { interval in
-                                        Text(interval.description).tag(interval)
-                                    }
-                                }
-                                .frame(height: 85)
-                                .padding()
-                                .pickerStyle(.inline)
-                            }
-                            
-                            //button to save to a new array
-                            Button {
-                                
-                                let animalToSave = Animal(
-                                    name: name,
-                                    species: selectedOption,
-                                    breed: breed,
-                                    weight: selectedWeight,
-                                    feedType: feedType,
-                                    feedSchedule: selectedFeed,
-                                    vaccinationType: vaccinationType,
-                                    vaccinationFrequency: selectedVaccinationFrequency,
-                                    lastVaccinationDate: selectedVaccinationDate,
-                                    notes: ""
-                                )
-                                
-                                context.insert(animalToSave)
-                                
-                                dismiss()
-                                
-                                do{
-                                    try context.save()
-                                    print("Animal saved")
-                                }catch{
-                                    print("Failed to save")
-                                }
-                                
-                            } label: {
-                                
-                                ZStack {
-                                    
-                                    RoundedRectangle(cornerRadius: 40)
-                                        .frame(width: 360, height: 85)
-                                        .foregroundStyle(Color(red: 7/255, green: 28/255, blue: 24/255).gradient)
-                                    
-                                    Text("SAVE")
-                                        .font(.title2)
-                                        .fontDesign(.default)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(Color.white)
-                                    
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
+                    TextField("Name", text: $name).textInputAutocapitalization(.words)
+                    TextField("Breed", text: $breed).textInputAutocapitalization(.words)
+                    HStack {
+                        TextField("Weight", text: $weight).keyboardType(.numberPad)
+                        Text("kg").foregroundStyle(.secondary)
                     }
                 }
-                .navigationBarBackButtonHidden(true)}
-            
+
+                Section {
+                    TextField("Feed type, e.g. hay", text: $feedType)
+                    Picker("Feed every", selection: $feedHours) {
+                        ForEach([1, 2, 3, 4, 6, 8, 10, 12, 24], id: \.self) { Text("\($0) hours").tag($0) }
+                    }
+                } header: { Label("Feeding", systemImage: "leaf") }
+
+                Section(header: Label("Vaccination schedule", systemImage: "calendar"),
+                        footer: Text("Use the schedule recommended for this animal by your veterinarian.")) {
+                    TextField("Vaccination name", text: $vaccinationType)
+                    DatePicker("Last given", selection: $vaccinationDate, in: ...Date(), displayedComponents: .date)
+                    Picker("Repeat every", selection: $vaccinationFrequency) {
+                        ForEach(VaccinationInterval.allCases) { Text($0.description).tag($0) }
+                    }
+                }
+
+                Section {
+                    Button("Save animal", action: save).buttonStyle(FarmPrimaryButtonStyle())
+                        .disabled(!canSave).listRowBackground(Color.clear).listRowInsets(EdgeInsets())
+                }
+            }
+            .navigationTitle("Add Animal")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .alert("Could not save animal", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })) {
+                Button("OK") { saveError = nil }
+            } message: { Text(saveError ?? "Please retry.") }
+        }
+    }
+
+    private func save() {
+        guard canSave, let validWeight else { return }
+        let animal = Animal(name: name.trimmingCharacters(in: .whitespacesAndNewlines), species: selectedSpecies,
+                            breed: breed.trimmingCharacters(in: .whitespacesAndNewlines), weight: validWeight,
+                            feedType: feedType.trimmingCharacters(in: .whitespacesAndNewlines), feedSchedule: feedHours,
+                            vaccinationType: vaccinationType.trimmingCharacters(in: .whitespacesAndNewlines),
+                            vaccinationFrequency: vaccinationFrequency, lastVaccinationDate: vaccinationDate, notes: "")
+        context.insert(animal)
+        do {
+            try context.save()
+            sync.requestSync()
+            dismiss()
+        } catch {
+            context.rollback()
+            saveError = error.localizedDescription
         }
     }
 }
 
-
-
 #Preview {
-    AddNewAnimal()
+    AddNewAnimal().environmentObject(AnimalSyncService()).modelContainer(for: Animal.self, inMemory: true)
 }
-
